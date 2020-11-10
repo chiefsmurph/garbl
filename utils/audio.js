@@ -2,11 +2,6 @@ const ffmpeg = require("fluent-ffmpeg");
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
 
-// json parse stringify
-const reverseString = str => str.split('').reverse().join('');
-const stringObj = obj => reverseString(JSON.stringify(obj));
-const parseObj = str => JSON.parse(reverseString(str));
-
 // audio
 const getDuration = async file =>
     (await ffprobe(file)).format.duration;
@@ -34,9 +29,6 @@ const cutAtTime = (file, timestamp, duration = 1) =>
 
 
 module.exports = {
-    stringObj,
-    parseObj,
-    
     getDuration,
     getBaseFileName,
     cutAtTime

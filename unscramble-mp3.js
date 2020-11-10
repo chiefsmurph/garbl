@@ -2,7 +2,9 @@ const fs = require('fs');
 const ffmetadata = require("ffmetadata");
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
-const { cutAtTime, getBaseFileName, getDuration, parseObj } = require('./utils');
+
+const { getDuration, cutAtTime, getBaseFileName } = require('./utils/audio');
+const { parseObj } = require('./utils/string-parsing');
 
 const mergeFilesWithCrossFade = async (filesArray, crossFadeDuration, outputFile) => {
     // filesArray = filesArray.slice(0, 8);

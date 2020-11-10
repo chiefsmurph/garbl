@@ -1,7 +1,9 @@
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmetadata = require("ffmetadata");
-const { stringObj, getDuration, cutAtTime, getBaseFileName } = require('./utils');
+
+const { getDuration, cutAtTime, getBaseFileName } = require('./utils/audio');
+const { stringObj } = require('./utils/string-parsing');
 
 const mergeFiles = (filesArray, outputFile) =>
     new Promise(resolve => {
