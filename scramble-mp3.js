@@ -1,7 +1,7 @@
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
-const ffmetadata = require("ffmetadata");
 
+const { write } = require('./utils/metadata');
 const { getDuration, cutAtTime, getBaseFileName } = require('./utils/audio');
 const { stringObj } = require('./utils/string-parsing');
 
@@ -105,16 +105,14 @@ const scrambleMp3 = async (input, clipDuration = 0.1, overlapRatio = 2) => {
         .map(timestamp => allTimestamps.indexOf(timestamp));
     const metadata = { timestampOrder, clipDuration, overlapRatio };
     console.log({ metadata })
-    await new Promise(resolve =>
-        ffmetadata.write(outputFile, {
+    await write(
+        outputFile, 
+        {
             artist: 'mp3scrambler', 
             comment: stringObj(metadata) 
-        }, err => {
-            console.log({ err });
-            resolve();
-        })
+        }
     );
-    
+
     console.log('now clearing temp');
     for (let file of newOrder) {
         fs.unlinkSync(file.outputFile);

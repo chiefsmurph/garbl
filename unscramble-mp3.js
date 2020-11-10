@@ -1,8 +1,8 @@
 const fs = require('fs');
-const ffmetadata = require("ffmetadata");
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 
+const { read } = require('./utils/metadata');
 const { getDuration, cutAtTime, getBaseFileName } = require('./utils/audio');
 const { parseObj } = require('./utils/string-parsing');
 
@@ -36,7 +36,7 @@ const unscrambleMp3 = async input => {
 
     let timestampOrder, clipDuration, overlapRatio;
     try {
-        const metadata = await promisify(ffmetadata.read)(input);
+        const metadata = await read(input);
         const parsedComment = parseObj(metadata.comment);
         ({ timestampOrder, clipDuration, overlapRatio } = parsedComment);
     } catch (e) {
