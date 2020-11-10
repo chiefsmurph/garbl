@@ -3,7 +3,7 @@ const unscrambleMp3 = require('./unscramble-mp3');
 
 (async () => {
 
-    const input = './inputs/test-audio-2.mp3';
+    const input = './inputs/words.mp3';
     const clipDuration = 0.1;
 
     console.log('scrambling mp3');
