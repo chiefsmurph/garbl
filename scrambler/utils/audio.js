@@ -1,3 +1,4 @@
+const path = require('path');
 const ffmpeg = require("fluent-ffmpeg");
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
@@ -9,8 +10,7 @@ const getDuration = async file =>
 const getBaseFileName = file => file.split('.').slice(0, -1).join('').split('/').pop();
 const cutAtTime = (file, timestamp, duration = 1) =>
     new Promise(resolve => {
-        const baseFileName = getBaseFileName(file);
-        const outputFile = `./temp/${baseFileName}-${timestamp}.mp3`;
+        const outputFile = path.join(__dirname, `../temp/${getBaseFileName(file)}-${timestamp}.mp3`);
         ffmpeg(file)
             .setStartTime(timestamp)
             .duration(duration)

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 
 const { write, read } = require('../utils/metadata');
@@ -75,7 +76,7 @@ const realScramble = array => {
 
 const singleScramble = async ({
     input,
-    output,
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
     clipDuration = 0.1,
     overlapRatio = 2
 }) => {
@@ -83,8 +84,6 @@ const singleScramble = async ({
     if (!input) {
         return console.error('no input defined');
     }
-
-    output = output || `./outputs/${getBaseFileName(input)}-scrambled.mp3`;
 
     const duration = await getDuration(input);
     console.log({ duration });
@@ -142,7 +141,7 @@ const singleScramble = async ({
 
 const multiScramble = async ({
     input,
-    output = `outputs/${getBaseFileName(input)}-scrambled.mp3`
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
 }) => {
 
     if (!input) {
@@ -154,10 +153,10 @@ const multiScramble = async ({
             clipDuration: 0.1, 
             overlapRatio: 2
         },
-        {
-            clipDuration: 0.3, 
-            overlapRatio: 1.5
-        },
+        // {
+        //     clipDuration: 0.3, 
+        //     overlapRatio: 1.5
+        // },
         // {
         //     clipDuration: 0.1, 
         //     overlapRatio: 2
@@ -168,7 +167,7 @@ const multiScramble = async ({
     let index = 1;
     for (let { clipDuration, overlapRatio } of settings) {
         console.log(`starting ${index} of ${settings.length}`);
-        const output = `./temp/${getBaseFileName(input)}-scrambled-${index}.mp3`;
+        const output = path.join(__dirname, `../temp/${getBaseFileName(input)}-scrambled.mp3`);
         await singleScramble({
             input: curInput,
             output,
@@ -180,10 +179,8 @@ const multiScramble = async ({
         index++;
     }
     
-    console.log(
-        'renaming', curInput.slice(2), `outputs/${getBaseFileName(input)}-scrambled.mp3`
-    );
-    await fs.renameSync(curInput.slice(2), output);
+    console.log('renaming', input, output);
+    await fs.renameSync(curInput, output);
     return output;
 
 };

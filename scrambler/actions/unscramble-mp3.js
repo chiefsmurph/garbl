@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 
@@ -27,13 +28,16 @@ const mergeFilesWithCrossFade = async (filesArray, crossFadeDuration, outputFile
 
 const unscrambleSingle = async ({
     input,
-    output,
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-unscrambled.mp3`),
     clipDuration,
     overlapRatio,
     timestampOrder
 }) => {
     
-    output = output || `./outputs/${getBaseFileName(input)}-unscrambled.mp3`;
+    console.log({
+        input,
+        output
+    });
 
     const duration = await getDuration(input);
     console.log({
@@ -76,7 +80,10 @@ const unscrambleSingle = async ({
     return output;
 };
 
-const unscrambleMp3 = async input => {
+const unscrambleMp3 = async ({ 
+    input,
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-unscrambled.mp3`),
+}) => {
     if (!input) {
         return console.error('no input defined');
     }
@@ -101,9 +108,10 @@ const unscrambleMp3 = async input => {
     for (let conversion of conversions.reverse()) {
 
         console.log(`starting ${index} of ${conversions.length}`);
-        const output = `./temp/${getBaseFileName(input)}-unscrambled-${index}.mp3`;
+        const output = path.join(__dirname, `../temp/${getBaseFileName(input)}-unscrambled-${index}.mp3`);
+        console.log({ tempOutput: output });
 
-        lastOutput = await unscrambleSingle({
+        await unscrambleSingle({
             input: curInput,
             output,
             ...conversion
@@ -115,11 +123,9 @@ const unscrambleMp3 = async input => {
 
     }
 
-    console.log(
-        'renaming', curInput.slice(2), `outputs/${getBaseFileName(input)}-unscrambled.mp3`
-    );
-    await fs.renameSync(curInput.slice(2), `outputs/${getBaseFileName(input)}-unscrambled.mp3`);
-    return `outputs/${getBaseFileName(input)}-scrambled.mp3`;
+    console.log('renaming', curInput, output);
+    await fs.renameSync(curInput, output);
+    return output;
 }
 
 module.exports = unscrambleMp3;

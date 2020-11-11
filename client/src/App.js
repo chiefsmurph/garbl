@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import { HashRouter, Route, Redirect } from "react-router-dom";
+ 
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+import Upload from './Upload';
+import Select from './Select';
+import Result from './Result';
+
+export default () => (
+  <div className="App">
+    <h1>mp3Scrambler</h1>
+    <div className="App-container">
+      <HashRouter>
+        <Route exact path="/">
+          <Redirect to="/upload" />
+        </Route>
+        <Route path="/upload" component={Upload} />
+        <Route path="/select" component={Select} />
+        <Route path="/result" component={Result} />
+      </HashRouter>
     </div>
-  );
-}
-
-export default App;
+  </div>
+);
