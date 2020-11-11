@@ -1,5 +1,5 @@
-const scrambleMp3 = require('./actions/scramble-mp3');
-const unscrambleMp3 = require('./actions/unscramble-mp3');
+const scrambleMp3 = require('./scrambler/actions/scramble-mp3');
+const unscrambleMp3 = require('./scrambler/actions/unscramble-mp3');
 
 (async () => {
 
