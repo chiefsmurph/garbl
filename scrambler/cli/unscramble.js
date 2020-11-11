@@ -1,5 +1,5 @@
 (async () => {
     const file = process.argv[2];
     console.log({ file });
-    await require('../scramble-mp3')(file);
+    await require('../actions/unscramble-mp3')(file);
 })();

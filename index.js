@@ -1,5 +1,5 @@
-const scrambleMp3 = require('./scramble-mp3');
-const unscrambleMp3 = require('./unscramble-mp3');
+const scrambleMp3 = require('./actions/scramble-mp3');
+const unscrambleMp3 = require('./actions/unscramble-mp3');
 
 (async () => {
 
@@ -7,10 +7,14 @@ const unscrambleMp3 = require('./unscramble-mp3');
     const clipDuration = 0.1;
 
     console.log('scrambling mp3');
-    const { outputFile: scrambledFile } = await scrambleMp3(input, clipDuration, 2);
+    const scrambledFile = await scrambleMp3({
+        input, 
+        clipDuration: 0.1,
+        overlapRatio: 2 
+    });
 
     console.log('unscrambling mp3');
-    const { outputFile: unscrambledFile } = await unscrambleMp3(scrambledFile);
+    const unscrambledFile = await unscrambleMp3(scrambledFile);
 
     console.log('done', {
         input,
