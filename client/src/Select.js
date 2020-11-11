@@ -5,7 +5,7 @@ export default class extends Component {
         const file = this.props.location.search.slice(1);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:3008/act', true);
+        xhr.open('POST', 'act', true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         this.setState({ loading: true });
         xhr.onload = () => {

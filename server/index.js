@@ -69,3 +69,5 @@ app.post('/act', async (req, res, next) => {
     res.error(e);
   }
 });
+
+app.use(express.static(path.join(__dirname, '../client/build')));

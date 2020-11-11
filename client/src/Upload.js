@@ -9,7 +9,7 @@ class Upload extends Component {
         oData.append("audioFile", evt.target.files[0]);
 
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", "http://localhost:3008/upload", true);
+        oReq.open("POST", "upload", true);
         console.log(evt.target.files[0]);
         this.setState({ loading: true });
         oReq.onload = () => {
