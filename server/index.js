@@ -1,5 +1,9 @@
 const { promisify } = require('util');
 
+const exec = promisify(require('child_process').exec);
+const youtubedl = require('youtube-dl')
+const fs = require('fs')
+
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -19,7 +23,7 @@ app.options('*', cors());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-  With, Content-Type, Accept");
-    next();   
+    next();
 });
 
 // app.use('/outputs', express.static());
@@ -51,6 +55,63 @@ app.post('/upload', async (req, res, next) => {
   await promisify(audioFile.mv)(`../scrambler/inputs/${name}`);
   res.send(200);
 
+});
+
+app.post('/fetch', async (req, res, next) => {
+  console.log({ body: req.body})
+  const { url } = JSON.parse(Object.keys(req.body)[0]);
+  console.log({ fetching: url });
+
+
+  const info = await promisify(youtubedl.getInfo)(url);
+console.log({ info })
+  const cmd = `youtube-dl -o "${path.join(__dirname, `../scrambler/inputs/`)}%(title)s.%(ext)s" --extract-audio --audio-format=mp3 --audio-quality=0 ${url}`;
+
+  await exec(cmd);
+
+  return res.send({ file: info.fulltitle + '.mp3' })
+
+  // const info = await promisify(youtube.getInfo)(url);
+  // console.log({ info });
+
+  // const info = await promisify(youtubedl.getInfo)(url);
+  // const { _filename } = info;
+  //   // if (err) throw err
+   
+  // console.log('id:', info.id)
+  // console.log('title:', info.title)
+  // console.log('url:', info.url)
+  // console.log('thumbnail:', info.thumbnail)
+  // console.log('description:', info.description)
+  // console.log('filename:', info._filename)
+  // console.log('format id:', info.format_id);
+
+  // const video = youtubedl(url, [
+  //   // '-i', 
+  //   '--extract-audio', '--audio-format=mp3', '--audio-quality=0'
+  // ]);
+
+  // // Will be called when the download starts.
+  // video.on('info', function(info) {
+  //   console.log('Download started')
+  //   console.log('filename: ' + info._filename)
+  //   console.log('size: ' + info.size)
+  // });
+  
+  // video.pipe(fs.createWriteStream(`../scrambler/inputs/${'couch' || _filename.split('.')[0]}.mp3`));
+
+
+  // // Will be called if download was already completed and there is nothing more to download.
+  // video.on('complete', function complete(info) {
+  //   'use strict'
+  //   console.log('filename: ' + info._filename + ' already downloaded.')
+  // })
+  
+  // video.on('end', function() {
+  //   console.log('finished downloading!')
+  // })
+
+  // youtubedl
 });
 
 app.post('/act', async (req, res, next) => {

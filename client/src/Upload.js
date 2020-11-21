@@ -5,11 +5,12 @@ import { Component } from 'react';
 class Upload extends Component {
     state = { loading: false };
     fileSelected = evt => {
+        const url = s => window.location.hostname === 'localhost' ? `http://localhost:3009/${s}` : s;
         const oData = new FormData();
         oData.append("audioFile", evt.target.files[0]);
 
         var oReq = new XMLHttpRequest();
-        oReq.open("POST", "upload", true);
+        oReq.open("POST", url('upload'), true);
         console.log(evt.target.files[0]);
         this.setState({ loading: true });
         oReq.onload = () => {
@@ -24,11 +25,32 @@ class Upload extends Component {
         evt.preventDefault();
     };
 
+    youtubeSelected = () => {
+        const inputVal = document.querySelector('input[type="text"]').value;
+        console.log({ inputVal})
+
+        const url = s => window.location.hostname === 'localhost' ? `http://localhost:3009/${s}` : s;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url('fetch'), true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        this.setState({ loading: true });
+        xhr.onload = () => {
+            // do something to response
+            console.log(xhr.responseText);
+            this.props.history.push(`/select?${JSON.parse(xhr.responseText).file}`);
+        };
+        xhr.send(JSON.stringify({
+            url: inputVal
+        }));
+    }
+
     render() {
         return this.state.loading ? 'loading' : (
         <div>
             <h2>Select an mp3</h2>
             <input type="file" accept=".mp3" onChange={this.fileSelected} />
+            <h2>or... use a youtube url</h2>
+            <input type="text"/><input type="submit" onClick={this.youtubeSelected} value="select" />
         </div>
         );
     }

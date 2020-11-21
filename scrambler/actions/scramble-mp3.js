@@ -78,7 +78,8 @@ const singleScramble = async ({
     input,
     output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
     clipDuration = 0.1,
-    overlapRatio = 2
+    overlapRatio = 2,
+    isYoutube = false,
 }) => {
 
     if (!input) {
@@ -98,11 +99,16 @@ const singleScramble = async ({
         }
     }
 
-    const lastOutput = outputs.pop();
-    const newOrder = realScramble(outputs);
-    newOrder.push(lastOutput);
+    const newOrder = isYoutube 
+        ? [...outputs].reverse() 
+        : (() => {
+            const lastOutput = outputs.pop();
+            const newOrder = realScramble(outputs);
+            newOrder.push(lastOutput);
+            return newOrder;
+        })();
 
-    console.log({ newOrder })
+    console.log({ isYoutube, newOrder })
 
     await mergeFiles(
         newOrder.map(output => output.outputFile), 
@@ -165,14 +171,14 @@ const multiScramble = async ({
 
     let curInput = input;
     let index = 1;
-    for (let { clipDuration, overlapRatio } of settings) {
+    for (let setting of settings) {
         console.log(`starting ${index} of ${settings.length}`);
         const output = path.join(__dirname, `../temp/${getBaseFileName(input)}-scrambled.mp3`);
         await singleScramble({
             input: curInput,
             output,
-            clipDuration,
-            overlapRatio
+            ...setting,
+            isYoutube: true
         });
         console.log(`done with ${index} of ${settings.length}`);
         curInput = output;

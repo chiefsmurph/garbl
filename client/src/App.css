@@ -22,6 +22,10 @@ button {
   margin: 20px;
 }
 
+input {
+  font-size: 150%;
+}
+
 a, a:visited {
   color: orange;
 }

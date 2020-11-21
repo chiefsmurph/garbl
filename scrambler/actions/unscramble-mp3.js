@@ -7,18 +7,42 @@ const { read } = require('../utils/metadata');
 const { getDuration, cutAtTime, getBaseFileName } = require('../utils/audio');
 const { parseObj } = require('../utils/string-parsing');
 
+const normalizeAudio = async file => {
+    const { stderr } = await exec(`ffmpeg -i "${file}" -af "volumedetect" -vn -sn -dn -f null /dev/null`);
+    console.log({ stderr })
+    const line = stderr.split('\n').find(line => line.includes('max_volume: '));
+    console.log({ line});
+    const roomToAmp = Math.abs(Number(line.split('max_volume: ').pop().split(' dB')[0]));
+
+    console.log({ roomToAmp });
+    const cmd = `ffmpeg -i "${file}" -af "volume=${roomToAmp}dB" "${file}"`;
+    console.log(cmd);
+    const newFilename = `${file.split('/').slice(0, -1).join('/')}/${getBaseFileName(file)}-normalized.mp3`;
+    const second = await exec(`ffmpeg -i "${file}" -af "volume=${roomToAmp}dB" -y "${newFilename}"`);
+
+    await fs.renameSync(newFilename, file);
+};
+
 const mergeFilesWithCrossFade = async (filesArray, crossFadeDuration, outputFile) => {
     // filesArray = filesArray.slice(0, 8);
     console.log(`merging ${filesArray.length} mp3s`);
+
+
+    console.log('checking files...');
+    if (await getDuration(filesArray[0]) < 0.1) {
+        filesArray.shift();
+        console.log('shifted the first bit off because too short');
+    }
+
     const filterString = filesArray.slice(0, -1).map((_, i) => 
         `[${i === 0 ? i : `a${i}`}][${i+1}]acrossfade=d=${crossFadeDuration}:c1=tri:c2=tri${i === filesArray.length - 2 ? '' : `[a${i+1}]`}`
     );
     const args = [
-        ...filesArray.map(file => `-i ${file}`),
+        ...filesArray.map(file => `-i "${file}"`),
         '-vn',
         `-filter_complex "${filterString.join(';')}"`,
         '-write_xing 0',
-        outputFile
+        `"${outputFile}"`
     ];
 
     const cmd = `ffmpeg ${args.join(' ')}`;
@@ -31,7 +55,8 @@ const unscrambleSingle = async ({
     output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-unscrambled.mp3`),
     clipDuration,
     overlapRatio,
-    timestampOrder
+    timestampOrder,
+    isYoutube
 }) => {
     
     console.log({
@@ -60,9 +85,9 @@ const unscrambleSingle = async ({
         }
     }
     
-    const unscrambleFileOrder = timestampOrder.map(index => {
-        return outputs[index].outputFile;
-    });
+    console.log({ isYoutube })
+    const unscrambleFileOrder = (isYoutube ? [...outputs].reverse() : timestampOrder.map(index => outputs[index]))
+        .map(file => file.outputFile);
 
     try { fs.unlinkSync(output); } catch (e) {}
     await mergeFilesWithCrossFade(
@@ -71,11 +96,14 @@ const unscrambleSingle = async ({
         output
     );
 
+    await normalizeAudio(output);
+
+
     console.log('now clearing temp');
-    for (let file of unscrambleFileOrder) {
-        console.log({ file })
-        fs.unlinkSync(file);
-    }
+    // for (let file of unscrambleFileOrder) {
+    //     console.log({ file })
+    //     fs.unlinkSync(file);
+    // }
     
     return output;
 };
@@ -91,6 +119,7 @@ const unscrambleMp3 = async ({
     console.log(`unscrambling ${input}`);
 
     let conversions;
+    let isYoutube = false;
     try {
         const metadata = await read(input);
         console.log({ metadata })
@@ -100,7 +129,15 @@ const unscrambleMp3 = async ({
         if (!validScrambleMp3) throw new Error();
         conversions = parsedComment;
     } catch (e) {
-        return console.error(`unable to unscramble ${input}: ${e.toString()}`);
+        console.error(`no metadata found for ${input}: ${e.toString()}`);
+        console.error('reverting to default settings');
+        isYoutube = true;
+        conversions = [
+            {
+                clipDuration: 0.1, 
+                overlapRatio: 2
+            }
+        ];
     }
 
     let curInput = input;
@@ -114,7 +151,8 @@ const unscrambleMp3 = async ({
         await unscrambleSingle({
             input: curInput,
             output,
-            ...conversion
+            ...conversion,
+            isYoutube
         });
 
         console.log(`done with ${index} of ${conversions.length}`);

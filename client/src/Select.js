@@ -2,10 +2,12 @@ import { Component } from 'react';
 export default class extends Component {
     state = { loading: false };
     btnClick = action => (evt) => {
+
+        const url = s => window.location.hostname === 'localhost' ? `http://localhost:3009/${s}` : s;
         const file = this.props.location.search.slice(1);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'act', true);
+        xhr.open('POST', url('act'), true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         this.setState({ loading: true });
         xhr.onload = () => {
