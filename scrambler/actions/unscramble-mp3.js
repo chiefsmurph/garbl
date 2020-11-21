@@ -100,10 +100,10 @@ const unscrambleSingle = async ({
 
 
     console.log('now clearing temp');
-    // for (let file of unscrambleFileOrder) {
-    //     console.log({ file })
-    //     fs.unlinkSync(file);
-    // }
+    for (let file of unscrambleFileOrder) {
+        console.log({ file })
+        fs.unlinkSync(file);
+    }
     
     return output;
 };
