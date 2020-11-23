@@ -5,11 +5,11 @@
   "license": "MIT",
   "scripts": {
     "clearmods": "rm -rf node_modules && rm -rf client/node_modules",
-    "rsync-go": "rsync . -avz john@38.108.119.159:~",
+    "rsync-go": "rsync . -avz john@38.108.119.159:~/mp3-scrambler",
     "send": "yarn clearmods && yarn rsync-go",
     "build": "cd client && yarn && yarn build",
     "dev": "yarn && cd server && nodemon .",
-    "start": "cd server && node .",
+    "start": "cd server && pm2 start index.js --name \"mp3-scrambler\"",
     "postinstall": "cd client && yarn"
   },
   "dependencies": {

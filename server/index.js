@@ -139,4 +139,7 @@ app.post('/act', async (req, res, next) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, '../client/build')));
+
+const clientPath = path.join(__dirname, '../client/build');
+console.log({ clientPath });
+app.use(express.static(clientPath));
