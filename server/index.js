@@ -59,8 +59,7 @@ app.post('/upload', async (req, res, next) => {
 
 app.post('/fetch', async (req, res, next) => {
   try {
-    console.log({ body: req.body})
-    const { url } = JSON.parse(Object.keys(req.body)[0]);
+    const { url } = req.body;
     console.log({ fetching: url });
   
   
@@ -115,7 +114,10 @@ app.post('/fetch', async (req, res, next) => {
     // youtubedl
   } catch (e) {
     console.error(e);
-    res.status(500);
+    setTimeout(() => {
+      console.log('there was an error')
+      res.send(500);
+    }, 1500);
   }
   
 });
@@ -133,7 +135,7 @@ app.post('/act', async (req, res, next) => {
     res.send({ output: finalOut });
   } catch (e) {
     console.error(e);
-    res.status(500);
+    setTimeout(() => res.status(500), 1500);
   }
 });
 

@@ -42,8 +42,10 @@ h1 {
 }
 
 button {
-  font-size: 2em;
-  margin: 20px;
+  font-size: 30px;
+  padding: 0.5em 2em;
+  font-weight: bolder;
+  cursor: pointer;
 }
 
 input {
@@ -82,7 +84,7 @@ a, a:visited {
   font-weight: bolder;
 }
 
-.file-input:hover, .youtube-selector input:hover {
+.file-input:hover, .youtube-selector input:hover, button:hover {
   background-color: white;
   color:green;
 }
