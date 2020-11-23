@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { Component } from 'react';
+import FileUpload from './FileUpload';
 
 class Upload extends Component {
     state = { loading: false };
@@ -46,11 +47,21 @@ class Upload extends Component {
 
     render() {
         return this.state.loading ? 'loading' : (
-        <div>
-            <h2>Select an mp3</h2>
-            <input type="file" accept=".mp3" onChange={this.fileSelected} />
-            <h2>or... use a youtube url</h2>
-            <input type="text"/><input type="submit" onClick={this.youtubeSelected} value="select" />
+        <div className="upload-page">
+            <p class="select-mp3">
+                <h2>select an mp3</h2>
+                <div>
+                    <FileUpload onChange={this.fileSelected} />
+                </div>
+            </p>
+            <h3>or...</h3>
+            <p>
+                <h2>use a youtube url</h2>
+                <div className="youtube-selector">
+                    <input type="text"/>
+                    <input type="submit" onClick={this.youtubeSelected} value="select" />
+                </div>
+            </p>
         </div>
         );
     }

@@ -8,7 +8,7 @@
     "rsync-go": "rsync . -avz john@38.108.119.159:~",
     "send": "yarn clearmods && yarn rsync-go",
     "build": "cd client && yarn && yarn build",
-    "dev": "cd server && nodemon .",
+    "dev": "yarn && cd server && nodemon .",
     "start": "cd server && node .",
     "postinstall": "cd client && yarn"
   },

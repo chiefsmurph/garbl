@@ -7,7 +7,7 @@ import Result from './Result';
 
 export default () => (
   <div className="App">
-    {/* <div className="App-container"> */}
+    <div className="App-container">
       <h1>mp3Scrambler</h1>
       <HashRouter>
         <Route exact path="/">
@@ -17,6 +17,6 @@ export default () => (
         <Route path="/select" component={Select} />
         <Route path="/result" component={Result} />
       </HashRouter>
-    {/* </div> */}
+    </div>
   </div>
 );
