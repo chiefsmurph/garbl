@@ -20,11 +20,11 @@ export default class extends Component {
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.onload = () => {
             console.log('response', xhr.responseText);
-            const { status, result, error } = JSON.parse(xhr.responseText);
+            const { status, result, error, output } = JSON.parse(xhr.responseText);
             if (error) {
                 return this.messageThenRoute('sorry, something didn\'t go right', '/')
             } else if (result) {
-                return this.messageThenRoute(result, `/result?${file()}`);
+                return this.messageThenRoute(result, `/result?${output}`);
             } else {
                 this.setState({ statusText: status });
             }
