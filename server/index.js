@@ -1,3 +1,6 @@
+const socketIOClient = require('socket.io-client');
+const { rhEndpoint, options } = require('./config');
+
 const { promisify } = require('util');
 
 const exec = promisify(require('child_process').exec);
@@ -45,8 +48,20 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+const rhSocket = socketIOClient(rhEndpoint, options);
+rhSocket.on('connect', () => {
+  console.log('connection')
+})
+rhSocket.emit('client:act', 'log', `mp3scrambler: hello`);
+
+const userInfo = req => {
+  const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(',')[0]
+  const userAgent = req.headers['user-agent'];
+  return { ip, userAgent };
+}
 
 app.post('/upload', async (req, res, next) => {
+
 
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded.');
@@ -55,6 +70,8 @@ app.post('/upload', async (req, res, next) => {
   const { audioFile } = req.files;
   const { name } = audioFile;
 
+  rhSocket.emit('client:act', 'log', `mp3scrambler: upload ${name}`, userInfo(req));
+
   console.log({ audioFile });
   await promisify(audioFile.mv)(`../scrambler/inputs/${name}`);
   res.send(200);
@@ -62,6 +79,8 @@ app.post('/upload', async (req, res, next) => {
 });
 
 app.post('/fetch', async (req, res, next) => {
+
+
   try {
     const { url } = req.body;
     console.log({ fetching: url });
@@ -72,6 +91,8 @@ app.post('/fetch', async (req, res, next) => {
     
     const cmd = `youtube-dl -o "${path.join(__dirname, `../scrambler/inputs/`)}%(title)s.%(ext)s" --extract-audio --audio-format=mp3 --audio-quality=0 ${url}`;
   
+    rhSocket.emit('client:act', 'log', `mp3scrambler: fetching ${url}: ${info.fulltitle}`, userInfo(req));
+
     await exec(cmd);
   
     return res.send({ file: info.fulltitle + '.mp3' })
@@ -148,6 +169,7 @@ const newTask = async (file, action) => {
 app.post('/act', async (req, res, next) => {
   console.log("act body", req, req.body);
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
+  rhSocket.emit('client:act', 'log', `mp3scrambler: new task: ${action} ${file}`, userInfo(req));
   newTask(file, action);
   res.send(200);
 });

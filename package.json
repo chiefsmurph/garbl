@@ -19,6 +19,7 @@
     "express-fileupload": "^1.2.0",
     "ffmetadata": "^1.6.0",
     "fluent-ffmpeg": "^2.1.2",
+    "socket.io-client": "2.3.0",
     "youtube-dl": "^3.0.2"
   }
 }
