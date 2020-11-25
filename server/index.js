@@ -34,7 +34,11 @@ app.get('/outputs/:id', function(req, res){
 });
 
 const fileUpload = require('express-fileupload');
-app.use(fileUpload());
+app.use(fileUpload({
+  // limits: { fileSize: 50 * 1024 * 1024 },
+  safeFileNames: true,
+  useTempFiles: true
+}));
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -123,21 +127,38 @@ app.post('/fetch', async (req, res, next) => {
   
 });
 
+const statuses = {};
+
+const newTask = async (file, action) => {
+  const fn = action === 'scramble' ? scrambleMp3 : unscrambleMp3;
+  const input = `../scrambler/inputs/${file}`;
+  const key = [file, action].join('-');
+  console.log({ input });
+  try {
+    statuses[key] = { status: `current ${action} in progress` };
+    const output = await fn({ input });
+    const finalOut = output.split('/').pop();
+    statuses[key] = { result: `${action} was successful`, output: finalOut };
+  } catch (e) {
+    statuses[key] = { error: `an error occurred trying to ${action} the audio` };
+    console.error(e);
+  }
+}
+
 app.post('/act', async (req, res, next) => {
   console.log("act body", req, req.body);
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
-  const fn = action === 'scramble' ? scrambleMp3 : unscrambleMp3;
-  const input = `../scrambler/inputs/${file}`;
-  console.log({ input });
-  try {
-    const output = await fn({ input });
-    console.log({ output });
-    const finalOut = output.split('/').pop();
-    res.send({ output: finalOut });
-  } catch (e) {
-    console.error(e);
-    setTimeout(() => res.status(500), 1500);
-  }
+  newTask(file, action);
+  res.send(200);
+});
+
+app.get('/status', (req, res) => {
+  const { file, action } = req.query;
+  const key = [file, action].join('-');
+  console.log({ file, action, key });
+  res.send(
+    statuses[key]
+  );
 });
 
 
