@@ -108,6 +108,7 @@ a, a:visited {
 
 .select-mp3 {
   display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -125,6 +126,7 @@ a, a:visited {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-width: 0;
 }
 .youtube-selector input[type="submit"] {
   /* padding: 0.4em 2em; */

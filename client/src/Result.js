@@ -1,5 +1,5 @@
 export default () => {
-    const file = decodeURIComponent(window.location.hash.slice(4).split('?').slice(1).join(''));
+    const file = window.location.hash.slice(4).split('?').slice(1).join('');
     const audioUrl = `outputs/${file}`;
     return (
         <div>

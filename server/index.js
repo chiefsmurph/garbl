@@ -64,7 +64,8 @@ app.post('/fetch', async (req, res, next) => {
   
   
     const info = await promisify(youtubedl.getInfo)(url);
-  console.log({ info })
+    console.log({ info });
+    
     const cmd = `youtube-dl -o "${path.join(__dirname, `../scrambler/inputs/`)}%(title)s.%(ext)s" --extract-audio --audio-format=mp3 --audio-quality=0 ${url}`;
   
     await exec(cmd);

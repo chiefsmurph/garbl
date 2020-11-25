@@ -26,7 +26,7 @@ export default class extends Component {
         xhr.open('POST', url('act'), true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         this.setState({ statusText: `current ${action} in progress` });
-        xhr.onload = this.onLoadHandler(xhr, () => `/result?${JSON.parse(xhr.responseText).output}`);
+        xhr.onload = this.onLoadHandler(xhr, () => `/result?${encodeURIComponent(JSON.parse(xhr.responseText).output)}`);
         xhr.send(JSON.stringify({
             file: file(),
             action

@@ -4,8 +4,14 @@ const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
 
 // audio
-const getDuration = async file =>
-    (await ffprobe(file)).format.duration;
+const getDuration = async file => {
+    try {
+        return (await ffprobe(file)).format.duration;
+    } catch (e) {
+        return null;
+    }
+}
+    
 
 const getBaseFileName = file => file.split('.').slice(0, -1).join('').split('/').pop();
 const cutAtTime = (file, timestamp, duration = 1) =>
