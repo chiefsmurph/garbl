@@ -24,7 +24,7 @@ export default class extends Component {
             if (error) {
                 return this.messageThenRoute('sorry, something didn\'t go right', '/')
             } else if (result) {
-                return this.messageThenRoute(result, `/result?${output}`);
+                return this.messageThenRoute(result, `/result?${encodeURIComponent(output)}`);
             } else {
                 this.setState({ statusText: status });
             }

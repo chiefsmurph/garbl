@@ -36,7 +36,7 @@ app.get('/outputs/:id', function(req, res){
 const fileUpload = require('express-fileupload');
 app.use(fileUpload({
   // limits: { fileSize: 50 * 1024 * 1024 },
-  safeFileNames: true,
+  // safeFileNames: true,
   useTempFiles: true
 }));
 

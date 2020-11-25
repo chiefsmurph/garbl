@@ -49,7 +49,7 @@ class Upload extends Component {
         xhr.setRequestHeader('Content-type', 'application/json');
         this.setState({ statusText: 'loading' });
         
-        xhr.onload = this.onLoadHandler(xhr, () => `/select?${JSON.parse(xhr.responseText).file}`);
+        xhr.onload = this.onLoadHandler(xhr, () => `/select?${encodeURIComponent(JSON.parse(xhr.responseText).file)}`);
         xhr.send(JSON.stringify({
             url: inputVal
         }));
