@@ -74,6 +74,12 @@ const realScramble = array => {
     return returnArr.map(({ index, ...obj }) => obj);
 }
 
+
+const fixFirstChunkDuration = (file) => {
+
+};
+
+
 const singleScramble = async ({
     input,
     output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
@@ -108,7 +114,36 @@ const singleScramble = async ({
             return newOrder;
         })();
 
-    console.log({ isYoutube, newOrder })
+    console.log({ isYoutube, newOrder });
+
+
+    console.log(
+        'chunk durations',
+        await Promise.all(
+            newOrder
+                .map(output => output.outputFile)
+                .map((file, index) => getDuration(file))
+        )
+    )
+
+
+    // todo fix the last chunk length
+    // for now cut it
+    newOrder.shift();
+
+
+
+    console.log(
+        'chunk durations',
+        await Promise.all(
+            newOrder
+                .map(output => output.outputFile)
+                .map((file, index) => getDuration(file))
+        )
+    )
+
+    // newOrder.shift();
+    await new Promise(resolve => setTimeout(resolve, 7000));
 
     await mergeFiles(
         newOrder.map(output => output.outputFile), 
@@ -128,6 +163,8 @@ const singleScramble = async ({
         ...currentMetadata?.comment ? parseObj(currentMetadata.comment) : [],
         metadata,
     ];
+
+ 
     await write(
         output, 
         {
@@ -137,10 +174,10 @@ const singleScramble = async ({
     );
 
     console.log('now clearing temp');
-    for (let file of newOrder) {
-        console.log({ file: file.outputFile });
-        fs.unlinkSync(file.outputFile);
-    }
+    // for (let file of newOrder) {
+    //     console.log({ file: file.outputFile });
+    //     fs.unlinkSync(file.outputFile);
+    // }
 
     return output;
 };

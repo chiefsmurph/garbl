@@ -85,9 +85,20 @@ const unscrambleSingle = async ({
         }
     }
     
-    console.log({ isYoutube })
-    const unscrambleFileOrder = (isYoutube ? [...outputs].reverse() : timestampOrder.map(index => outputs[index]))
-        .map(file => file.outputFile);
+    const newFileOrder = isYoutube 
+        ? [...outputs].reverse()
+        : timestampOrder.map(index => outputs[index])
+    console.log({ isYoutube, newFileOrder });
+    const unscrambleFileOrder = newFileOrder.map(file => file.outputFile);
+
+
+    console.log(
+        'chunk durations',
+        await Promise.all(
+            unscrambleFileOrder
+                .map((file, index) => getDuration(file))
+        )
+    )
 
     try { fs.unlinkSync(output); } catch (e) {}
     await mergeFilesWithCrossFade(

@@ -93,8 +93,8 @@ app.post('/fetch', async (req, res, next) => {
   
     rhSocket.emit('client:act', 'log', `mp3scrambler: fetching ${url}: ${info.fulltitle}`, userInfo(req));
 
-    await exec(cmd);
-  
+    const output = await exec(cmd);
+    console.log({ output })
     return res.send({ file: info.fulltitle + '.mp3' })
   
     // const info = await promisify(youtube.getInfo)(url);
