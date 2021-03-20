@@ -59,6 +59,7 @@ a, a:visited {
 
 .upload-page h3 {
   text-align: center;
+  margin-bottom: 2em;
 }
 
 .upload-page > * > * {
@@ -134,4 +135,16 @@ a, a:visited {
   font-size: 30px;
   font-weight: bolder;
   cursor: pointer;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  button, .file-input, input[type="submit"] {
+    font-size: 80% !important;
+    width: 100px
+  }
+  .upload-page > * > * {
+    min-width: initial;
+  }
 }
