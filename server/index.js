@@ -37,6 +37,7 @@ app.get('/outputs/:id', function(req, res){
 });
 
 const fileUpload = require('express-fileupload');
+const blobToMp3 = require('../scrambler/utils/blob-to-mp3');
 app.use(fileUpload({
   // limits: { fileSize: 50 * 1024 * 1024 },
   // safeFileNames: true,
@@ -68,12 +69,24 @@ app.post('/upload', async (req, res, next) => {
   }
 
   const { audioFile } = req.files;
-  const { name } = audioFile;
-
+  const { forceName } = req.body;
+  const name = forceName || audioFile.name;
+  console.log({ name, forceName });
   rhSocket.emit('client:act', 'log', `mp3scrambler: upload ${name}`, userInfo(req));
 
   console.log({ audioFile });
-  await promisify(audioFile.mv)(`../scrambler/inputs/${name}`);
+
+  const movePath = `../scrambler/inputs/${name}`;
+  await promisify(audioFile.mv)(movePath);
+
+
+  if (forceName) {
+    console.log('gotta do this');
+    // if blob upload then convert to mp3
+    await blobToMp3(movePath);
+  }
+
+
   res.send(200);
 
 });
