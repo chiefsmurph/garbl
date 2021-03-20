@@ -136,7 +136,14 @@ class Upload extends Component {
         };
         this.fileSelected(
             fakeEvent, 
-            window.prompt('What do you want to call this?')
+            (function getName() {
+                const n = window.prompt('What do you want to call this?');
+                const parsed = (n || '').split('').filter(char => /[a-zA-Z0-9_]/.test(char)).join('');
+                console.log({ n, parsed})
+                if (parsed.length) return parsed;
+                alert(`we got ${parsed} try again`);
+                return getName();
+            })()
         );
     };
 
@@ -157,14 +164,14 @@ class Upload extends Component {
                     <FileUpload onChange={this.fileSelected} />
                 </div>
             </p>
-            <h3>or...</h3>
+            {/* <h3>or...</h3>
             <p>
                 <h2>use a youtube url</h2>
                 <div className="youtube-selector">
                     <input type="text"/>
                     <input type="submit" onClick={this.youtubeSelected} value="select" />
                 </div>
-            </p>
+            </p> */}
         </div>
         );
     }
