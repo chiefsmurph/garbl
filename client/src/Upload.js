@@ -67,7 +67,6 @@ class Record extends Component {
                         )
                     }
                 </div>
-                <audio id="adioplay"/>
             </>
         )
     }
@@ -150,6 +149,7 @@ class Upload extends Component {
                     <Record onBlob={this.handleBlob}/>
                 </div>
             </p>
+            <audio id="adioplay"/>
             <h3>or...</h3>
             <p className="select-mp3">
                 <h2>select an mp3</h2>
