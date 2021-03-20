@@ -140,7 +140,7 @@ a, a:visited {
 
 
 @media only screen and (max-width: 600px) {
-  button, .file-input, input[type="submit"] {
+  .upload-page button, .upload-page .file-input, .upload-page input[type="submit"] {
     font-size: 80% !important;
     width: 100px
   }
