@@ -118,7 +118,12 @@ class Upload extends Component {
         xhr.open("POST", url('upload'), true);
         console.log(evt.target.files[0]);
         this.setState({ statusText: 'loading' });
-        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}${forceName ? '&unscramble' : ''}`);
+        const forceAction = forceName 
+            ? '&unscramble'
+            : name.includes('scrambled')
+                ? '&scramble'
+                : '';
+        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}${forceAction}`);
         xhr.onerror = function () {
             console.log("** An error occurred during the transaction");
         };
