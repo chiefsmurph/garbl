@@ -6,29 +6,30 @@ import FileUpload from './FileUpload';
 
 
 class Record extends Component {
-    state = {
+    maxDuration = 15;
+    recordTimeout;
+    defaultState = {
         mediaRecorder: null,
         dataArray: [],
         status: 0,  // 0 = nada, 1: recording, 2: finished
     };
+    state = this.defaultState;
     startRecording = async () => {
         let audioIN = { audio: true }; 
         const mediaStreamObj = await navigator.mediaDevices.getUserMedia(audioIN) 
         const mediaRecorder = new MediaRecorder(mediaStreamObj);
         mediaRecorder.ondataavailable = ev => {
-            // console.log('got', ev);
             this.setState(({ dataArray }) => ({
                 dataArray: [...dataArray, ev.data],
             }), () => {
                 var audio = document.getElementById('adioplay');
                 audio.controls = true;
-                var blob = new Blob(this.state.dataArray, { 'type' : 'audio/ogg; codecs=opus' });
+                var blob = new Blob(this.state.dataArray, { type: 'audio/ogg; codecs=opus' });
                 var audioURL = window.URL.createObjectURL(blob);
                 audio.src = audioURL;
                 console.log("recorder stopped");
                 this.setState({ blob, status: 2 });
             });
-
         };
         this.setState({
             mediaRecorder,
@@ -37,10 +38,20 @@ class Record extends Component {
             console.log('starting');
             mediaRecorder.start();
         });
+        this.recordTimeout = setTimeout(() => {
+            this.stopRecording();
+            setTimeout(() => alert(`max record duration: ${this.maxDuration} seconds`), 100);
+        }, this.maxDuration * 1000);
     };
     stopRecording = () => {
         console.log(this.state);
         this.state.mediaRecorder.stop();
+        clearTimeout(this.recordTimeout);
+    };
+    rerecord = () => {
+        this.setState(this.defaultState);
+        document.getElementById('adioplay').src = null;
+        document.getElementById('adioplay').controls = false;
     };
     sendRecording = () =>
         this.props.onBlob(
@@ -53,17 +64,20 @@ class Record extends Component {
                 <div>
                     {
                         status === 0 && (
-                            <button onClick={this.startRecording}>Record</button>
+                            <button onClick={this.startRecording}>record</button>
                         )
                     }
                     {
                         status === 1 && (
-                            <button onClick={this.stopRecording}>Stop</button>
+                            <button onClick={this.stopRecording}>stop</button>
                         )
                     }
                     {
                         status === 2 && (
-                            <button onClick={this.sendRecording}>Send</button>
+                            <>
+                                <button onClick={this.rerecord}>rerecord</button>
+                                <button onClick={this.sendRecording}>send</button>
+                            </>
                         )
                     }
                 </div>
@@ -104,7 +118,7 @@ class Upload extends Component {
         xhr.open("POST", url('upload'), true);
         console.log(evt.target.files[0]);
         this.setState({ statusText: 'loading' });
-        xhr.onload = this.onLoadHandler(xhr, () => `/select?${name}`);
+        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}${forceName ? '&unscramble' : ''}`);
         xhr.onerror = function () {
             console.log("** An error occurred during the transaction");
         };
@@ -141,7 +155,7 @@ class Upload extends Component {
                 const parsed = (n || '').split('').filter(char => /[a-zA-Z0-9_]/.test(char)).join('');
                 console.log({ n, parsed})
                 if (parsed.length) return parsed;
-                alert(`we got ${parsed} try again`);
+                alert(`we got ${parsed ? `"${parsed}"` : 'an empty string'} try again`);
                 return getName();
             })()
         );

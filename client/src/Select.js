@@ -1,6 +1,20 @@
 import { Component } from 'react';
 const url = s => window.location.hostname === 'localhost' ? `http://localhost:3009/${s}` : s;
-const file = () => decodeURIComponent(window.location.hash.slice(4).split('?').slice(1).join(''));
+const file = () => decodeURIComponent(getQueryVariable('file'));
+
+function getQueryVariable(variable) {
+    var query = window.location.hash.split('?').pop();
+    var vars = query.split('&');
+    console.log({ query, vars})
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1]);
+        }
+    }
+    console.log('Query variable %s not found', variable);
+}
+
 export default class extends Component {
     state = { statusText: '', action: null, statusInterval: null };
 
@@ -53,12 +67,18 @@ export default class extends Component {
 
     render() {
         // console.log(this.props.location.search, this.props.location.search.slice(1));
-        console.log()
+        const allActions = ['scramble', 'unscramble'];
+        const qsActions = allActions.filter(type => getQueryVariable(type));
+        console.log({ qsActions});
+        const disabled = qsActions.length ? allActions.filter(action => qsActions.includes(action)) : [];
         return this.state.statusText ? this.state.statusText : (
-            <div>
+            <div className="select-actions">
                 <code>file: {file()}</code><br/><br/>
-                <button onClick={this.btnClick('scramble')}>SCRAMBLE</button><br/>
-                <button onClick={this.btnClick('unscramble')}>UNSCRAMBLE</button>
+                {
+                    allActions.map(action => (
+                        <button onClick={this.btnClick(action)} disabled={disabled.includes(action)}>{action.toUpperCase()}</button>
+                    ))
+                }
             </div>
         );
     }

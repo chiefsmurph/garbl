@@ -82,9 +82,13 @@ a, a:visited {
   font-weight: bolder;
 }
 
-.file-input:hover, .youtube-selector input:hover, button:hover {
+.file-input:hover:not(:disabled), .youtube-selector input:hover:not(:disabled), button:hover:not(:disabled) {
   background-color: white;
   color:green;
+}
+
+button:disabled {
+  cursor: initial;
 }
 
 .file-input * {
@@ -137,7 +141,13 @@ a, a:visited {
   cursor: pointer;
 }
 
+audio {
+  width: 100%;
+}
 
+.select-actions button {
+  clear: both;
+}
 
 @media only screen and (max-width: 600px) {
   .upload-page button, .upload-page .file-input, .upload-page input[type="submit"] {
