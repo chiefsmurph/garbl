@@ -215,7 +215,7 @@ const multiScramble = async ({
             input: curInput,
             output,
             ...setting,
-            isYoutube: true
+            // isYoutube: true
         });
         console.log(`done with ${index} of ${settings.length}`);
         curInput = output;

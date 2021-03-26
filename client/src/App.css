@@ -143,6 +143,7 @@ button:disabled {
 
 audio {
   width: 100%;
+  outline: 0;
 }
 
 .select-actions button {
