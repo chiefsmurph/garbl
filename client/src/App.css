@@ -159,24 +159,24 @@ audio {
 
 
 h2.result-box {
-  background-color: rgba(100, 100, 100, 0.2);
-  border: 1px solid silver;
-  border-bottom-width: 0;
+  background-color: hsla(0,0%,39.2%,.2);
+  border: solid silver;
+  border-width: 1px 1px 0;
   box-sizing: border-box;
-  padding: 0.5em;
+  padding: .5em;
   margin: 2px 0;
 }
 
 h2.result-box i {
   display: block;
-  line-break: anywhere;
-  font-size: 70%;
-  color: black;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 53%;
+  color: #9acd32;
   font-family: monospace;
-  margin-top: 0.5em;
-  background-color: rgb(255 255 255 / 50%);
-  background: linear-gradient(105deg, #f0f3f4 20%, rgba(255, 255, 255, 0.5) 80%);
-  padding: 0.4em 1em;
+  margin-top: 10px;
+  background-color: rgb(255 255 255/10%);
+  padding: 12px;
 }
 
 .select-actions button, .result-page button {
@@ -190,22 +190,45 @@ h2.result-box i {
 
 .result-page .result-box {
   position: relative;
+}
+
+.style2 .result-page .result-box {
   background: linear-gradient(105deg, black 0%, #f0f3f4 85%);
 }
 
-.result-page > .result-box::after {
-  content: "🎉";
-  position: absolute;
-  top: -0.5em;
-  right: 3vw;
-  font-size: 38px;
-}
 .result-page a:hover {
   color: yellow;
 }
 
+.style2 h2.result-box {
+  background-color: rgba(100, 100, 100, 0.2);
+  border: 1px solid silver;
+  border-bottom-width: 0;
+  box-sizing: border-box;
+  padding: 0.5em;
+  margin: 2px 0;
+}
 
+.style2 .result-page > .result-box::after {
+  content: "🎉";
+  position: absolute;
+  opacity: 0.8;
+  top: -0.7em;
+  right: 5%;
+  font-size: 38px;
+}
 
+.style2 h2.result-box i {
+  display: block;
+  line-break: anywhere;
+  font-size: 70%;
+  color: black;
+  font-family: monospace;
+  margin-top: 0.5em;
+  background-color: rgb(255 255 255 / 50%);
+  background: linear-gradient(105deg, #f0f3f4 20%, rgba(255, 255, 255, 0.5) 80%);
+  padding: 0.4em 1em;
+}
 
 
 
@@ -219,6 +242,13 @@ label {
 
 
 @media only screen and (max-width: 600px) {
+  .App {
+    font-size: calc(15px + 2vmin);
+    overflow: hidden;
+  }
+  h1 {
+    font-size: 180%;
+  }
   .upload-page button, .upload-page .file-input, .upload-page input[type="submit"] {
     font-size: 80%;
     min-width: 100px;
