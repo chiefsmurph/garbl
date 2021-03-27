@@ -164,16 +164,28 @@ audio {
 h2.result-box {
   background-color: rgba(100, 100, 100, 0.2);
   border: 1px solid silver;
-  border-width: 0 0 3px 3px;
+  border-bottom-width: 0;
+  box-sizing: border-box;
   padding: 0.5em;
+  margin: 2px 0;
 }
 
 h2.result-box i {
-  width: 70vw;
-  /* height: 300px; */
   display: block;
   text-overflow: ellipsis;
   overflow: hidden;
   font-size: 53%;
   color: yellowgreen;
+  font-family: monospace;
+  margin-top: 10px;
+  background-color: rgb(255 255 255 / 10%);
+  padding: 12px;
+}
+
+.select-actions button, .result-page button {
+  width: 50%;
+}
+
+.result-page > div {
+  background-color: #f0f3f4;
 }
