@@ -47,6 +47,7 @@ button {
   padding: 0.5em 2em;
   font-weight: bolder;
   cursor: pointer;
+  outline: 0;
 }
 
 input {
@@ -172,14 +173,14 @@ h2.result-box {
 
 h2.result-box i {
   display: block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 53%;
-  color: yellowgreen;
+  line-break: anywhere;
+  font-size: 70%;
+  color: black;
   font-family: monospace;
-  margin-top: 10px;
-  background-color: rgb(255 255 255 / 10%);
-  padding: 12px;
+  margin-top: 0.5em;
+  background-color: rgb(255 255 255 / 50%);
+  background: linear-gradient(105deg, #f0f3f4 20%, rgba(255, 255, 255, 0.5) 80%);
+  padding: 0.4em 1em;
 }
 
 .select-actions button, .result-page button {
@@ -188,10 +189,12 @@ h2.result-box i {
 
 .result-page > div {
   background-color: #f0f3f4;
+  display: flex;
 }
 
 .result-page .result-box {
   position: relative;
+  background: linear-gradient(105deg, black 0%, #f0f3f4 85%);
 }
 
 .result-page > .result-box::after {
@@ -199,4 +202,8 @@ h2.result-box i {
   position: absolute;
   top: -0.5em;
   right: 3vw;
+  font-size: 60px;
+}
+.result-page a:hover {
+  color: yellow;
 }

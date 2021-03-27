@@ -87,7 +87,7 @@ class Record extends Component {
 }
 
 
-class Upload extends Component {
+class Home extends Component {
     state = { statusText: '' };
 
     somethingDidntGoRight = () =>
@@ -153,17 +153,14 @@ class Upload extends Component {
                 files: [blob]
             }
         };
-        this.fileSelected(
-            fakeEvent, 
-            (function getName() {
-                const n = window.prompt('What do you want to call this?');
-                const parsed = (n || '').split('').filter(char => /[a-zA-Z0-9_]/.test(char)).join('');
-                console.log({ n, parsed})
-                if (parsed.length) return parsed;
-                alert(`we got ${parsed ? `"${parsed}"` : 'an empty string'} try again`);
-                return getName();
-            })()
-        );
+        const usersDesiredName = window.prompt('what do you want to call this?')
+        const forceName = (usersDesiredName || '').split('').filter(char => /[a-zA-Z0-9_]/.test(char)).join('');
+
+        forceName.length &&
+            this.fileSelected(
+                fakeEvent,
+                forceName
+            );
     };
 
     render() {
@@ -196,4 +193,4 @@ class Upload extends Component {
     }
 }
 
-export default Upload;
+export default Home;
