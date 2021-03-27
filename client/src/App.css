@@ -189,3 +189,14 @@ h2.result-box i {
 .result-page > div {
   background-color: #f0f3f4;
 }
+
+.result-page .result-box {
+  position: relative;
+}
+
+.result-page > .result-box::after {
+  content: "🎉";
+  position: absolute;
+  top: -0.5em;
+  right: 3vw;
+}
