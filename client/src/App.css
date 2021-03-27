@@ -44,7 +44,7 @@ h1 {
 
 button {
   font-size: 30px;
-  padding: 0.5em 2em;
+  padding: 0.5em 0;
   font-weight: bolder;
   cursor: pointer;
   outline: 0;

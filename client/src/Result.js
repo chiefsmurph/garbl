@@ -13,7 +13,6 @@ export default () => {
             <br/>
             <a href={audioUrl} download>Click to download</a><br/><br/>
             <a href='./'>Click to start over</a><br/>
-
         </div>
     );
 }
