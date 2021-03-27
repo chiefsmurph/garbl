@@ -73,7 +73,7 @@ export default class extends Component {
         const disabled = qsActions.length ? allActions.filter(action => qsActions.includes(action)) : [];
         return this.state.statusText ? this.state.statusText : (
             <div className="select-actions">
-                <code>file: {file()}</code><br/><br/>
+                <h2>file: <i>{file()}</i></h2>
                 {
                     allActions.map(action => (
                         <button onClick={this.btnClick(action)} disabled={disabled.includes(action)}>{action.toUpperCase()}</button>

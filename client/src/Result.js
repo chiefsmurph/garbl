@@ -3,7 +3,7 @@ export default () => {
     const audioUrl = `outputs/${file}`;
     return (
         <div>
-            <h2>Result</h2>
+            <h2 className="result-box">Result: <i>{file}</i></h2>
             <audio controls preload="metadata">
                 <source src={audioUrl} type="audio/mpeg" />
                 Your browser does not support the audio element.
