@@ -63,9 +63,15 @@ a, a:visited {
   margin-bottom: 2em;
 }
 
+.upload-page .recorder > div {
+  text-align: right;
+}
+
 .upload-page > * > * {
   min-width: 200px;
 }
+
+.upload-page 
 
 .file-input {
   background: lightgray;
@@ -87,6 +93,7 @@ a, a:visited {
   background-color: white;
   color:green;
 }
+
 
 button:disabled {
   cursor: initial;
@@ -136,7 +143,6 @@ button:disabled {
   min-width: 0;
 }
 .youtube-selector input[type="submit"] {
-  /* padding: 0.4em 2em; */
   font-size: 30px;
   font-weight: bolder;
   cursor: pointer;
@@ -149,16 +155,6 @@ audio {
 
 .select-actions button {
   clear: both;
-}
-
-@media only screen and (max-width: 600px) {
-  .upload-page button, .upload-page .file-input, .upload-page input[type="submit"] {
-    font-size: 80% !important;
-    width: 100px
-  }
-  .upload-page > * > * {
-    min-width: initial;
-  }
 }
 
 
@@ -202,8 +198,35 @@ h2.result-box i {
   position: absolute;
   top: -0.5em;
   right: 3vw;
-  font-size: 60px;
+  font-size: 38px;
 }
 .result-page a:hover {
   color: yellow;
+}
+
+
+
+
+
+
+
+
+label {
+  font-size: 250%;
+  line-break: loose;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  .upload-page button, .upload-page .file-input, .upload-page input[type="submit"] {
+    font-size: 80%;
+    min-width: 100px;
+  }
+  .upload-page > * > * {
+    min-width: initial;
+  }
+  .result-page button, .select-actions button {
+    width: 100%;
+  }
 }

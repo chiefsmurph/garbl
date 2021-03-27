@@ -71,7 +71,7 @@ export default class extends Component {
         const qsActions = allActions.filter(type => getQueryVariable(type));
         console.log({ qsActions});
         const disabled = qsActions.length ? allActions.filter(action => qsActions.includes(action)) : [];
-        return this.state.statusText ? this.state.statusText : (
+        return this.state.statusText ? <label>{this.state.statusText}</label> : (
             <div className="select-actions">
                 <h2 className="result-box">file: <i>{file()}</i></h2>
                 {

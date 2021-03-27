@@ -59,8 +59,10 @@ class Record extends Component {
         );
     render() {
         const { status } = this.state;
+        const statusText = ['hit record', 'recording...', 'review audio']
         return (
-            <>
+            <p className={`recorder status${status}`}>
+                <h2>{statusText[status]}</h2>
                 <div>
                     {
                         status === 0 && (
@@ -76,12 +78,13 @@ class Record extends Component {
                         status === 2 && (
                             <>
                                 <button onClick={this.rerecord}>rerecord</button>
+                                <br/>
                                 <button onClick={this.sendRecording}>send</button>
                             </>
                         )
                     }
                 </div>
-            </>
+            </p>
         )
     }
 }
@@ -164,14 +167,9 @@ class Home extends Component {
     };
 
     render() {
-        return this.state.statusText ? this.state.statusText : (
+        return this.state.statusText ? <label>{this.state.statusText}</label> : (
         <div className="upload-page">
-            <p className='recorder'>
-                <h2>hit record</h2>
-                <div>
-                    <Record onBlob={this.handleBlob}/>
-                </div>
-            </p>
+            <Record onBlob={this.handleBlob}/>
             <audio id="adioplay"/>
             <h3>or...</h3>
             <p className="select-mp3">

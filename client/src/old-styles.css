@@ -1,0 +1,22 @@
+
+
+h2.result-box {
+    background-color: hsla(0,0%,39.2%,.2);
+    border: solid silver;
+    border-width: 1px 1px 0;
+    box-sizing: border-box;
+    padding: .5em;
+    margin: 2px 0;
+}
+
+h2.result-box i {
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 53%;
+    color: #9acd32;
+    font-family: monospace;
+    margin-top: 10px;
+    background-color: rgb(255 255 255/10%);
+    padding: 12px;
+}
