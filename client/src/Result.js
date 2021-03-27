@@ -4,7 +4,7 @@ export default () => {
     return (
         <div>
             <h2>Result</h2>
-            <audio controls preload="metadata" style={{ width: '300px' }}>
+            <audio controls preload="metadata">
                 <source src={audioUrl} type="audio/mpeg" />
                 Your browser does not support the audio element.
             </audio><br/><br/>
