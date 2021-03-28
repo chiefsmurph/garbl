@@ -74,7 +74,7 @@ export default class extends Component {
         return this.state.statusText ? <label>{this.state.statusText}</label> : (
             <div className="select-actions">
                 <div className="result-box">
-                    <h2>file: </h2><i>{file()}</i>
+                    <h2>file: </h2><i>inputs/{file()}</i>
                     <div>
                         <audio controls preload="metadata">
                             <source src={`inputs/${file()}`} type="audio/mpeg" />
