@@ -73,7 +73,15 @@ export default class extends Component {
         const disabled = qsActions.length ? allActions.filter(action => qsActions.includes(action)) : [];
         return this.state.statusText ? <label>{this.state.statusText}</label> : (
             <div className="select-actions">
-                <h2 className="result-box">file: <i>{file()}</i></h2>
+                <div className="result-box">
+                    <h2>file: </h2><i>{file()}</i>
+                    <audio controls preload="metadata">
+                        <source src={`inputs/${file()}`} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                {/* <div> */}
+                {/* </div> */}
                 {
                     allActions.map(action => (
                         <button onClick={this.btnClick(action)} disabled={disabled.includes(action)}>{action.toUpperCase()}</button>

@@ -36,6 +36,11 @@ app.get('/outputs/:id', function(req, res){
   res.download(file); // Set disposition and send it.
 });
 
+app.get('/inputs/:id', function(req, res){
+  const file = path.join(__dirname, `../scrambler/inputs/${req.params.id}`);
+  res.download(file); // Set disposition and send it.
+});
+
 const fileUpload = require('express-fileupload');
 const blobToMp3 = require('../scrambler/utils/blob-to-mp3');
 app.use(fileUpload({

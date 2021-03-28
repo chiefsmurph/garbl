@@ -179,7 +179,7 @@ audio {
 }
 
 
-h2.result-box {
+.result-box {
   /* background-image: url('https://www.transparenttextures.com/patterns/subtle-carbon.png'); */
   background-color: hsla(0,0%,39.2%,.2);
   border: solid silver;
@@ -189,7 +189,7 @@ h2.result-box {
   margin: 2px 0;
 }
 
-h2.result-box i {
+.result-box i {
   display: block;
   text-overflow: ellipsis;
   overflow: hidden;
