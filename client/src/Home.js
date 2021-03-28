@@ -61,30 +61,33 @@ class Record extends Component {
         const { status } = this.state;
         const statusText = ['hit record', 'recording...', 'review audio']
         return (
-            <p className={`recorder status${status}`}>
-                <h2>{statusText[status]}</h2>
-                <div>
-                    {
-                        status === 0 && (
-                            <button onClick={this.startRecording}>record</button>
-                        )
-                    }
-                    {
-                        status === 1 && (
-                            <button onClick={this.stopRecording}>stop</button>
-                        )
-                    }
-                    {
-                        status === 2 && (
-                            <>
-                                <button onClick={this.rerecord}>rerecord</button>
-                                <br/>
-                                <button onClick={this.sendRecording}>send</button>
-                            </>
-                        )
-                    }
+            <div className="recorder-container">
+                <div className={`recorder status${status}`}>
+                    <h2>{statusText[status]}</h2>
+                    <div>
+                        {
+                            status === 0 && (
+                                <button onClick={this.startRecording}>record</button>
+                            )
+                        }
+                        {
+                            status === 1 && (
+                                <button onClick={this.stopRecording}>stop</button>
+                            )
+                        }
+                        {
+                            status === 2 && (
+                                <>
+                                    <button onClick={this.rerecord}>rerecord</button>
+                                    <br/>
+                                    <button onClick={this.sendRecording}>send</button>
+                                </>
+                            )
+                        }
+                    </div>
                 </div>
-            </p>
+                <audio id="adioplay"/>
+            </div>
         )
     }
 }
@@ -170,7 +173,6 @@ class Home extends Component {
         return this.state.statusText ? <label>{this.state.statusText}</label> : (
         <div className="upload-page">
             <Record onBlob={this.handleBlob}/>
-            <audio id="adioplay"/>
             <h3>or...</h3>
             <p className="select-mp3">
                 <h2>select an mp3</h2>

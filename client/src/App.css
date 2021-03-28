@@ -8,6 +8,10 @@ input {
 #root {
   min-height: 100vh; 
 }
+
+h2, h3, h4, h5 {
+  margin: 0;
+}
 .App {
   background-color: #282c34;
   /* background-color: black; */
@@ -44,7 +48,7 @@ h1 {
 
 button {
   font-size: 30px;
-  padding: 0.5em 0;
+  padding: 0.5em 2em;
   font-weight: bolder;
   cursor: pointer;
   outline: 0;
@@ -60,7 +64,7 @@ a, a:visited {
 
 .upload-page h3 {
   text-align: center;
-  margin-bottom: 2em;
+  margin: 2em 0;
 }
 
 .upload-page .recorder > div {
@@ -120,11 +124,26 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.recorder {
   margin: 0 !important;
 }
+
+.recorder-container, .select-mp3 {
+  /* border: 3px dashed white;
+  border-width: 0 2px 2px 0; */
+  /* padding: 1em;
+  padding-left: 0; */
+
+  /* background-color: rgba(0,0,0,0.8);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+  /* background-image: url('https://www.transparenttextures.com/patterns/swirl.png'); */
+  /* background-image: url('https://www.transparenttextures.com/patterns/textured-stripes.png'); */
+  
+}
+/* .select-mp3 {
+  background-color: rgba(0,0,0,0.9);
+  background-image: url('https://www.transparenttextures.com/patterns/tex2res3.png');
+  
+} */
 
 .select-mp3 h2 {
   margin: 0;
@@ -150,15 +169,18 @@ button:disabled {
 
 audio {
   width: 100%;
+  background-color: #f0f3f4;
   outline: 0;
 }
 
 .select-actions button {
   clear: both;
+  padding: 0.5em 0;
 }
 
 
 h2.result-box {
+  /* background-image: url('https://www.transparenttextures.com/patterns/subtle-carbon.png'); */
   background-color: hsla(0,0%,39.2%,.2);
   border: solid silver;
   border-width: 1px 1px 0;
@@ -176,7 +198,10 @@ h2.result-box i {
   font-family: monospace;
   margin-top: 10px;
   background-color: rgb(255 255 255/10%);
+  /* background-color: rgb(255 255 255/10%); */
+  /* background-color: black; */
   padding: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .select-actions button, .result-page button {
@@ -235,7 +260,7 @@ h2.result-box i {
 
 
 label {
-  font-size: 250%;
+  font-size: 170%;
   line-break: loose;
 }
 
