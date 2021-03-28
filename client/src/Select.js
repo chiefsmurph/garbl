@@ -73,6 +73,7 @@ export default class extends Component {
         const disabled = qsActions.length ? allActions.filter(action => qsActions.includes(action)) : [];
         return this.state.statusText ? <label>{this.state.statusText}</label> : (
             <div className="select-actions">
+                <a href="">click here to go back</a>
                 <div className="result-box">
                     <h2>file: </h2><i>inputs/{file()}</i>
                     <div>

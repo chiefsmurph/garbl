@@ -109,7 +109,7 @@ class Home extends Component {
         const isError = xhr.responseText.includes('Error');
         return isError
             ? this.somethingDidntGoRight()
-            : this.props.history.push(successRoute());
+            : setTimeout(() => this.props.history.push(successRoute()), 2000 * Math.random());
     };
 
     fileSelected = (evt, forceName) => {
@@ -123,7 +123,7 @@ class Home extends Component {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url('upload'), true);
         console.log(evt.target.files[0]);
-        this.setState({ statusText: 'loading' });
+        this.setState({ statusText: 'uploading audio...' });
         const forceAction = forceName 
             ? '&unscramble'
             : name.includes('scrambled')
@@ -180,6 +180,8 @@ class Home extends Component {
                     <FileUpload onChange={this.fileSelected} />
                 </div>
             </p>
+            {/* <h3>or...</h3>
+            <a href="">view the descramble logs</a> */}
             {/* <h3>or...</h3>
             <p>
                 <h2>use a youtube url</h2>
