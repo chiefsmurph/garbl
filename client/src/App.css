@@ -220,6 +220,10 @@ audio {
   top: -1.2em;
 }
 
+.result-box h2 {
+  margin: 0.25em 0;
+}
+
 .result-box div {
   background-color: #f0f3f4;
   display: flex;
