@@ -193,15 +193,17 @@ audio {
 .result-box i {
   display: block;
   text-overflow: ellipsis;
+  line-break: anywhere;
   overflow: hidden;
-  font-size: 53%;
+  font-size: 20px;
+  font-weight: bold;
   color: #9acd32;
   font-family: monospace;
   margin-top: 10px;
   background-color: rgb(255 255 255/10%);
   /* background-color: rgb(255 255 255/10%); */
   /* background-color: black; */
-  padding: 12px;
+  padding: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
