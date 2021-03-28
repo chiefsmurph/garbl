@@ -208,7 +208,7 @@ audio {
   width: 50%;
 }
 
-.result-page > div {
+.result-box div {
   background-color: #f0f3f4;
   display: flex;
 }

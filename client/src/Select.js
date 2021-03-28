@@ -75,10 +75,12 @@ export default class extends Component {
             <div className="select-actions">
                 <div className="result-box">
                     <h2>file: </h2><i>{file()}</i>
-                    <audio controls preload="metadata">
-                        <source src={`inputs/${file()}`} type="audio/mpeg" />
-                        Your browser does not support the audio element.
-                    </audio>
+                    <div>
+                        <audio controls preload="metadata">
+                            <source src={`inputs/${file()}`} type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
                 </div>
                 {/* <div> */}
                 {/* </div> */}
