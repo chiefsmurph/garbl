@@ -3,7 +3,7 @@ export default ({ history }) => {
     const audioUrl = `outputs/${file}`;
     return (
         <div className="result-page">
-            <h2 className="result-box">result: <i>{file}</i></h2>
+            <h2 className="result-box">result: <i>{audioUrl}</i></h2>
             <div>
                 <audio controls preload="metadata">
                     <source src={audioUrl} type="audio/mpeg" />
