@@ -78,7 +78,22 @@ app.post('/upload', async (req, res, next) => {
 
   const { audioFile } = req.files;
   const { forceName } = req.body;
-  const name = forceName || audioFile.name;
+  const rawName = forceName || audioFile.name;
+
+  const uniqueName = (() => {
+    const inputsDir = path.join(__dirname, '../scrambler/inputs');
+    const ext = path.extname(rawName);
+    const base = path.basename(rawName, ext);
+    let candidate = rawName;
+    let i = 1;
+    while (fs.existsSync(path.join(inputsDir, candidate))) {
+      candidate = `${base}_${i}${ext}`;
+      i++;
+    }
+    return candidate;
+  })();
+
+  const name = uniqueName;
   console.log({ name, forceName });
   rhSocket.emit('client:act', 'log', `garbl: upload ${name}`, userInfo(req));
 
@@ -88,19 +103,21 @@ app.post('/upload', async (req, res, next) => {
   await promisify(audioFile.mv)(movePath);
 
 
+  let finalName = name;
   if (forceName) {
     console.log('gotta do this');
-    // if blob upload then convert to mp3
     await blobToMp3(movePath);
+    finalName = `${name}.mp3`;
   }
 
-  const duration = await getDuration(movePath);
+  const finalPath = `../scrambler/inputs/${finalName}`;
+  const duration = await getDuration(finalPath);
   if (duration && duration > MAX_DURATION_SECONDS) {
-    fs.unlinkSync(movePath);
+    fs.unlinkSync(finalPath);
     return res.status(400).send(`File too long (${Math.round(duration)}s). Maximum is ${MAX_DURATION_SECONDS} seconds.`);
   }
 
-  res.sendStatus(200);
+  res.status(200).send(finalName);
 
 });
 

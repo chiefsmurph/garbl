@@ -129,12 +129,18 @@ class Home extends Component {
                 this.setState({ uploadProgress: Math.min(95, Math.round(e.loaded / e.total * 100)) });
             }
         };
-        const forceAction = forceName
-            ? '&unscramble'
-            : name.includes('scrambled')
-                ? '&scramble'
-                : '';
-        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}${forceAction}`);
+        xhr.onload = () => {
+            if (xhr.status >= 400) return this.somethingDidntGoRight(xhr.responseText);
+            if (xhr.responseText.includes('Error')) return this.somethingDidntGoRight();
+            const actualName = xhr.responseText.trim();
+            const forceAction = forceName
+                ? '&unscramble'
+                : actualName.includes('scrambled')
+                    ? '&scramble'
+                    : '';
+            this.setState({ uploadProgress: 100 });
+            this.props.history.push(`/select?file=${encodeURIComponent(actualName)}${forceAction}`);
+        };
         xhr.onerror = function () {
             console.log("** An error occurred during the transaction");
         };
