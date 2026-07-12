@@ -9,7 +9,7 @@
     "send": "yarn clearmods && yarn rsync-go",
     "build": "cd client && yarn && yarn build",
     "dev": "yarn && cd server && nodemon .",
-    "start": "cd server && pm2 start index.js --name \"garbl\"",
+    "start": "cd server && pm2 start index.js --name \"garbl\""
   },
   "dependencies": {
     "body-parser": "^1.19.0",
