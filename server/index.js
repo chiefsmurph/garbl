@@ -32,7 +32,9 @@ app.use(function(req, res, next) {
 
 app.get('/outputs/:id', function(req, res){
   const file = path.join(__dirname, `../scrambler/outputs/${req.params.id}`);
-  res.download(file); // Set disposition and send it.
+  const mime = file.endsWith('.wav') ? 'audio/wav' : 'audio/mpeg';
+  res.setHeader('Content-Type', mime);
+  res.download(file);
 });
 
 app.get('/inputs/:id', function(req, res){
