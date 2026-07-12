@@ -1,5 +1,6 @@
 node_modules
 server/counts.json
+server/config.js
 scrambler/scramble-store.json
 scrambler/temp/*
 scrambler/outputs/*
