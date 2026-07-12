@@ -21,7 +21,7 @@ function Footer() {
       )}
       <p style={{ margin: 0 }}>
         For entertainment and research purposes only. This does not guarantee privacy or security.
-      </p>
+        {stats?.v && <span style={{ marginLeft: '1em', opacity: 0.4 }}>v{stats.v}</span>}</p>
     </footer>
   );
 }

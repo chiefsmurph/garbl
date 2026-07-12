@@ -139,7 +139,10 @@ app.post('/act', async (req, res, next) => {
   res.sendStatus(200);
 });
 
-app.get('/stats', (req, res) => res.json(counts));
+const { execSync } = require('child_process');
+const gitHash = (() => { try { return execSync('git rev-parse --short HEAD').toString().trim(); } catch { return 'unknown'; } })();
+
+app.get('/stats', (req, res) => res.json({ ...counts, v: gitHash }));
 
 app.get('/status', (req, res) => {
   const { file, action } = req.query;
