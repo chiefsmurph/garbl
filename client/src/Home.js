@@ -94,18 +94,18 @@ class Record extends Component {
 
 
 class Home extends Component {
-    state = { statusText: '' };
+    state = { statusText: '', errorText: '' };
 
-    somethingDidntGoRight = () =>
-        this.setState({ statusText: 'sorry, something didn\'t go right'}, () => {
-            setTimeout(() => {
-                this.props.history.push('/');
-            }, 2000);
+    somethingDidntGoRight = (message) =>
+        this.setState({ statusText: '', errorText: message || 'sorry, something didn\'t go right' }, () => {
+            setTimeout(() => this.setState({ errorText: '' }), 4000);
         });
 
     onLoadHandler = (xhr, successRoute) => () => {
-        // do something to response
         console.log(xhr.responseText);
+        if (xhr.status >= 400) {
+            return this.somethingDidntGoRight(xhr.responseText);
+        }
         const isError = xhr.responseText.includes('Error');
         return isError
             ? this.somethingDidntGoRight()
@@ -170,8 +170,10 @@ class Home extends Component {
     };
 
     render() {
-        return this.state.statusText ? <label>{this.state.statusText}</label> : (
+        const { statusText, errorText } = this.state;
+        return statusText ? <label>{statusText}</label> : (
         <div className="upload-page">
+            {errorText && <p style={{ color: 'red' }}>{errorText}</p>}
             <Record onBlob={this.handleBlob}/>
             <h3>or...</h3>
             <p className="select-mp3">

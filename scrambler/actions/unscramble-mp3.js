@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
+const ffmpeg = require('fluent-ffmpeg');
 
 const { read } = require('../utils/metadata');
-const { getDuration, cutAtTime, getBaseFileName } = require('../utils/audio');
+const { getDuration, cutAtTime, cutAtTimeWav, getBaseFileName } = require('../utils/audio');
 const { parseObj } = require('../utils/string-parsing');
 
 const normalizeAudio = async file => {
@@ -24,29 +25,11 @@ const normalizeAudio = async file => {
 };
 
 const mergeFilesWithCrossFade = async (filesArray, crossFadeDuration, outputFile) => {
-    // filesArray = filesArray.slice(0, 8);
-    console.log(`merging ${filesArray.length} mp3s`);
-
-
-    console.log('checking files...');
-    if (await getDuration(filesArray[0]) < 0.1) {
-        filesArray.shift();
-        console.log('shifted the first bit off because too short');
-    }
-
-    const filterString = filesArray.slice(0, -1).map((_, i) => 
-        `[${i === 0 ? i : `a${i}`}][${i+1}]acrossfade=d=${crossFadeDuration}:c1=tri:c2=tri${i === filesArray.length - 2 ? '' : `[a${i+1}]`}`
-    );
-    const args = [
-        ...filesArray.map(file => `-i "${file}"`),
-        '-vn',
-        `-filter_complex "${filterString.join(';')}"`,
-        '-write_xing 0',
-        `"${outputFile}"`
-    ];
-
-    const cmd = `ffmpeg ${args.join(' ')}`;
-    console.log(cmd);
+    console.log(`merging ${filesArray.length} wav chunks via concat filter`);
+    const inputs = filesArray.map(f => `-i "${f}"`).join(' ');
+    const filterIn = filesArray.map((_, i) => `[${i}:a]`).join('');
+    const filterComplex = `${filterIn}concat=n=${filesArray.length}:v=0:a=1[out]`;
+    const cmd = `ffmpeg ${inputs} -filter_complex "${filterComplex}" -map "[out]" -c:a libmp3lame -q:a 2 -y "${outputFile}"`;
     await exec(cmd);
 };
 
@@ -77,7 +60,7 @@ const unscrambleSingle = async ({
     const totalChunkLength = clipDuration * overlapRatio;
     for (let i = 0; i < duration; i = +(i + totalChunkLength).toFixed(4)) {
         try {
-            const { outputFile, stdout, stderr } = await cutAtTime(input, i, totalChunkLength);
+            const { outputFile, stdout, stderr } = await cutAtTimeWav(input, i, totalChunkLength);
             outputs.push({ outputFile, timestamp: i });
             console.log(`finished cutting ${i} / ${duration}`)
         } catch (e) {

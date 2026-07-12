@@ -43,6 +43,8 @@ app.get('/inputs/:id', function(req, res){
 
 const fileUpload = require('express-fileupload');
 const blobToMp3 = require('../scrambler/utils/blob-to-mp3');
+const { getDuration } = require('../scrambler/utils/audio');
+const MAX_DURATION_SECONDS = 60;
 app.use(fileUpload({
   // limits: { fileSize: 50 * 1024 * 1024 },
   // safeFileNames: true,
@@ -58,7 +60,7 @@ const rhSocket = socketIOClient(rhEndpoint, options);
 rhSocket.on('connect', () => {
   console.log('connection')
 })
-rhSocket.emit('client:act', 'log', `mp3scrambler: hello`);
+rhSocket.emit('client:act', 'log', `garbl: hello`);
 
 const userInfo = req => {
   const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(',')[0]
@@ -77,7 +79,7 @@ app.post('/upload', async (req, res, next) => {
   const { forceName } = req.body;
   const name = forceName || audioFile.name;
   console.log({ name, forceName });
-  rhSocket.emit('client:act', 'log', `mp3scrambler: upload ${name}`, userInfo(req));
+  rhSocket.emit('client:act', 'log', `garbl: upload ${name}`, userInfo(req));
 
   console.log({ audioFile });
 
@@ -91,6 +93,11 @@ app.post('/upload', async (req, res, next) => {
     await blobToMp3(movePath);
   }
 
+  const duration = await getDuration(movePath);
+  if (duration && duration > MAX_DURATION_SECONDS) {
+    fs.unlinkSync(movePath);
+    return res.status(400).send(`File too long (${Math.round(duration)}s). Maximum is ${MAX_DURATION_SECONDS} seconds.`);
+  }
 
   res.send(200);
 
@@ -109,7 +116,7 @@ app.post('/fetch', async (req, res, next) => {
     
     const cmd = `youtube-dl -o "${path.join(__dirname, `../scrambler/inputs/`)}%(title)s.%(ext)s" --extract-audio --audio-format=mp3 --audio-quality=0 ${url}`;
   
-    rhSocket.emit('client:act', 'log', `mp3scrambler: fetching ${url}: ${info.fulltitle}`, userInfo(req));
+    rhSocket.emit('client:act', 'log', `garbl: fetching ${url}: ${info.fulltitle}`, userInfo(req));
 
     const output = await exec(cmd);
     console.log({ output })
@@ -187,7 +194,7 @@ const newTask = async (file, action) => {
 app.post('/act', async (req, res, next) => {
   console.log("act body", req, req.body);
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
-  rhSocket.emit('client:act', 'log', `mp3scrambler: new task: ${action} ${file}`, userInfo(req));
+  rhSocket.emit('client:act', 'log', `garbl: new task: ${action} ${file}`, userInfo(req));
   newTask(file, action);
   res.send(200);
 });
@@ -204,4 +211,7 @@ app.get('/status', (req, res) => {
 
 const clientPath = path.join(__dirname, '../client/build');
 console.log({ clientPath });
-app.use(express.static(clientPath));
+app.use('/garbl/outputs', express.static(path.join(__dirname, '../scrambler/outputs')));
+app.use('/garbl/inputs', express.static(path.join(__dirname, '../scrambler/inputs')));
+app.use('/garbl', express.static(clientPath));
+app.get('/', (req, res) => res.redirect('/garbl'));

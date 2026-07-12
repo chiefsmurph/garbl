@@ -6,7 +6,7 @@ export default ({ history }) => {
             <div className="result-box"><h2>result: </h2><i>{audioUrl}</i></div>
             <div>
                 <audio controls preload="metadata">
-                    <source src={audioUrl} type="audio/mpeg" />
+                    <source src={audioUrl} type={audioUrl.endsWith('.wav') ? 'audio/wav' : 'audio/mpeg'} />
                     Your browser does not support the audio element.
                 </audio>
             </div>

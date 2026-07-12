@@ -3,23 +3,49 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 
 const { write, read } = require('../utils/metadata');
-const { getDuration, cutAtTime, getBaseFileName } = require('../utils/audio');
+const { getDuration, cutAtTime, cutAtTimeWav, getBaseFileName } = require('../utils/audio');
+const { promisify } = require('util');
+const exec = promisify(require('child_process').exec);
 const { stringObj, parseObj } = require('../utils/string-parsing');
 
-const mergeFiles = (filesArray, outputFile) =>
-    new Promise(resolve => {
-        console.log(`merging ${filesArray.length} files`);
-        const cmd = ffmpeg();
-        for (let file of filesArray) {
-            cmd.input(file);
-        }
-        cmd
-            .on('end', () => {
-                console.log(`done merging to ${outputFile}`)
-                resolve();
-            })
-            .mergeToFile(outputFile);
-    });
+const MERGE_BATCH_SIZE = 200;
+
+const mergeBatchViaConcat = async (filesArray, outputFile) => {
+    const inputs = filesArray.map(f => `-i "${f}"`).join(' ');
+    const filterIn = filesArray.map((_, i) => `[${i}:a]`).join('');
+    const filterComplex = `${filterIn}concat=n=${filesArray.length}:v=0:a=1[out]`;
+    const cmd = `ffmpeg ${inputs} -filter_complex "${filterComplex}" -map "[out]" -c:a pcm_s16le -ar 44100 -ac 2 -y "${outputFile}"`;
+    await exec(cmd);
+};
+
+const mergeFiles = async (filesArray, outputFile) => {
+    console.log(`merging ${filesArray.length} files`);
+    if (filesArray.length <= MERGE_BATCH_SIZE) {
+        await mergeBatchViaConcat(filesArray, outputFile);
+        console.log(`done merging to ${outputFile}`);
+        return;
+    }
+    const tmpDir = path.join(__dirname, '../temp');
+    const batches = [];
+    for (let i = 0; i < filesArray.length; i += MERGE_BATCH_SIZE) {
+        batches.push(filesArray.slice(i, i + MERGE_BATCH_SIZE));
+    }
+    const batchOutputs = [];
+    for (let i = 0; i < batches.length; i++) {
+        const batchOut = path.join(tmpDir, `_batch_${Date.now()}_${i}.wav`);
+        console.log(`merging batch ${i + 1}/${batches.length}`);
+        const inputs = batches[i].map(f => `-i "${f}"`).join(' ');
+        const filterIn = batches[i].map((_, j) => `[${j}:a]`).join('');
+        const filterComplex = `${filterIn}concat=n=${batches[i].length}:v=0:a=1[out]`;
+        await exec(`ffmpeg ${inputs} -filter_complex "${filterComplex}" -map "[out]" -y "${batchOut}"`);
+        batchOutputs.push(batchOut);
+    }
+    await mergeFiles(batchOutputs, outputFile);
+    for (const f of batchOutputs) {
+        try { fs.unlinkSync(f); } catch (_) {}
+    }
+    console.log(`done merging to ${outputFile}`);
+};
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -82,7 +108,7 @@ const fixFirstChunkDuration = (file) => {
 
 const singleScramble = async ({
     input,
-    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.wav`),
     clipDuration = 0.1,
     overlapRatio = 2,
     isYoutube = false,
@@ -92,12 +118,22 @@ const singleScramble = async ({
         return console.error('no input defined');
     }
 
-    const duration = await getDuration(input);
+    // Convert input to WAV for sample-accurate cutting (MP3 fast-seek can be off by ~26ms per cut)
+    let sourceFile = input;
+    let tempSourceWav = null;
+    if (!input.toLowerCase().endsWith('.wav')) {
+        tempSourceWav = path.join(__dirname, `../temp/${getBaseFileName(input)}_src.wav`);
+        await exec(`ffmpeg -i "${input}" -ac 2 -ar 44100 -y "${tempSourceWav}"`);
+        sourceFile = tempSourceWav;
+        console.log(`converted input to WAV for accurate cutting: ${sourceFile}`);
+    }
+
+    const duration = await getDuration(sourceFile);
     console.log({ duration });
     const outputs = [];
     for (let i = 0; i < duration - clipDuration; i = +(i + clipDuration).toFixed(4)) {
         try {
-            const { outputFile, stdout, stderr } = await cutAtTime(input, i, clipDuration * overlapRatio);
+            const { outputFile, stdout, stderr } = await cutAtTimeWav(sourceFile, i, clipDuration * overlapRatio);
             outputs.push({ outputFile, timestamp: i });
             console.log(`finished cutting ${i} / ${duration}`)
         } catch (e) {
@@ -127,24 +163,6 @@ const singleScramble = async ({
     )
 
 
-    // todo fix the last chunk length
-    // for now cut it
-    newOrder.shift();
-
-
-
-    console.log(
-        'chunk durations',
-        await Promise.all(
-            newOrder
-                .map(output => output.outputFile)
-                .map((file, index) => getDuration(file))
-        )
-    )
-
-    // newOrder.shift();
-    await new Promise(resolve => setTimeout(resolve, 7000));
-
     await mergeFiles(
         newOrder.map(output => output.outputFile), 
         output
@@ -168,10 +186,14 @@ const singleScramble = async ({
     await write(
         output, 
         {
-            artist: 'mp3scrambler', 
+            artist: 'garbl',
             comment: stringObj(newComment) 
         }
     );
+
+    if (tempSourceWav) {
+        try { fs.unlinkSync(tempSourceWav); } catch (_) {}
+    }
 
     console.log('now clearing temp');
     // for (let file of newOrder) {
@@ -184,7 +206,7 @@ const singleScramble = async ({
 
 const multiScramble = async ({
     input,
-    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.mp3`),
+    output = path.join(__dirname, `../outputs/${getBaseFileName(input)}-scrambled.wav`),
 }) => {
 
     if (!input) {
@@ -193,8 +215,8 @@ const multiScramble = async ({
 
     const settings = [
         {
-            clipDuration: 0.1, 
-            overlapRatio: 2
+            clipDuration: 0.05,
+            overlapRatio: 1
         },
         // {
         //     clipDuration: 0.3, 
@@ -210,7 +232,7 @@ const multiScramble = async ({
     let index = 1;
     for (let setting of settings) {
         console.log(`starting ${index} of ${settings.length}`);
-        const output = path.join(__dirname, `../temp/${getBaseFileName(input)}-scrambled.mp3`);
+        const output = path.join(__dirname, `../temp/${getBaseFileName(input)}-scrambled.wav`);
         await singleScramble({
             input: curInput,
             output,

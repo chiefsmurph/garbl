@@ -78,7 +78,7 @@ export default class extends Component {
                     <h2>file: </h2><i>inputs/{file()}</i>
                     <div>
                         <audio controls preload="metadata">
-                            <source src={`inputs/${file()}`} type="audio/mpeg" />
+                            <source src={`inputs/${file()}`} type={file().endsWith('.wav') ? 'audio/wav' : 'audio/mpeg'} />
                             Your browser does not support the audio element.
                         </audio>
                     </div>

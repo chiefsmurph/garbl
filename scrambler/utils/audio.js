@@ -14,6 +14,7 @@ const getDuration = async file => {
     
 
 const getBaseFileName = file => file.split('.').slice(0, -1).join('').split('/').pop();
+
 const cutAtTime = (file, timestamp, duration = 1) =>
     new Promise(resolve => {
         const outputFile = path.join(__dirname, `../temp/${getBaseFileName(file)}-${timestamp}.mp3`);
@@ -21,15 +22,19 @@ const cutAtTime = (file, timestamp, duration = 1) =>
             .setStartTime(timestamp)
             .duration(duration)
             .audioChannels(2)
-            // .on('start', () => console.log('start'))
-            // .on('progress', (...args) => console.log('progress', ...args))
-            .on('end', (stdout, stderr) => {
-                return resolve({
-                    stdout, 
-                    stderr,
-                    outputFile
-                });
-            })
+            .on('end', (stdout, stderr) => resolve({ stdout, stderr, outputFile }))
+            .saveToFile(outputFile)
+    });
+
+const cutAtTimeWav = (file, timestamp, duration = 1) =>
+    new Promise(resolve => {
+        const outputFile = path.join(__dirname, `../temp/${getBaseFileName(file)}-${timestamp}.wav`);
+        ffmpeg(file)
+            .setStartTime(timestamp)
+            .duration(duration)
+            .audioChannels(2)
+            .audioFrequency(44100)
+            .on('end', (stdout, stderr) => resolve({ stdout, stderr, outputFile }))
             .saveToFile(outputFile)
     });
 
@@ -37,5 +42,6 @@ const cutAtTime = (file, timestamp, duration = 1) =>
 module.exports = {
     getDuration,
     getBaseFileName,
-    cutAtTime
+    cutAtTime,
+    cutAtTimeWav
 };

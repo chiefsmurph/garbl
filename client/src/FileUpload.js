@@ -3,7 +3,7 @@ export default ({ onChange }) => {
     return (
         <div className="file-input">
             <div>choose file</div>
-            <input type="file" accept=".mp3" onChange={onChange} />
+            <input type="file" accept=".mp3,.wav" onChange={onChange} />
         </div>
     )
 }
