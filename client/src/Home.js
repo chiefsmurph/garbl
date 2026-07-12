@@ -1,7 +1,7 @@
-import logo from './logo.svg';
 import './App.css';
 import { Component } from 'react';
 import FileUpload from './FileUpload';
+import ProgressBar from './ProgressBar';
 
 
 
@@ -94,7 +94,7 @@ class Record extends Component {
 
 
 class Home extends Component {
-    state = { statusText: '', errorText: '' };
+    state = { statusText: '', errorText: '', uploadProgress: null };
 
     somethingDidntGoRight = (message) =>
         this.setState({ statusText: '', errorText: message || 'sorry, something didn\'t go right' }, () => {
@@ -123,7 +123,12 @@ class Home extends Component {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url('upload'), true);
         console.log(evt.target.files[0]);
-        this.setState({ statusText: 'uploading audio...' });
+        this.setState({ uploadProgress: 0 });
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                this.setState({ uploadProgress: Math.round(e.loaded / e.total * 100) });
+            }
+        };
         const forceAction = forceName 
             ? '&unscramble'
             : name.includes('scrambled')
@@ -170,8 +175,10 @@ class Home extends Component {
     };
 
     render() {
-        const { statusText, errorText } = this.state;
-        return statusText ? <label>{statusText}</label> : (
+        const { statusText, errorText, uploadProgress } = this.state;
+        if (uploadProgress !== null) return <ProgressBar progress={uploadProgress} label="uploading..." />;
+        if (statusText) return <label>{statusText}</label>;
+        return (
         <div className="upload-page">
             {errorText && <p style={{ color: 'red' }}>{errorText}</p>}
             <Record onBlob={this.handleBlob}/>
