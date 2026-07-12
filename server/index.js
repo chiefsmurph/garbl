@@ -98,7 +98,7 @@ app.post('/upload', async (req, res, next) => {
     return res.status(400).send(`File too long (${Math.round(duration)}s). Maximum is ${MAX_DURATION_SECONDS} seconds.`);
   }
 
-  res.send(200);
+  res.sendStatus(200);
 
 });
 
@@ -134,7 +134,7 @@ app.post('/act', async (req, res, next) => {
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
   rhSocket.emit('client:act', 'log', `garbl: new task: ${action} ${file}`, userInfo(req));
   newTask(file, action);
-  res.send(200);
+  res.sendStatus(200);
 });
 
 app.get('/stats', (req, res) => res.json(counts));
