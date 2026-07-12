@@ -1,5 +1,6 @@
 node_modules
-temp
-outputs
-inputs
+scrambler/temp/*
+scrambler/outputs/*
+scrambler/inputs/*
+!scrambler/**/.gitkeep
 .DS_Store
