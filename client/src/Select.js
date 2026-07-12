@@ -66,7 +66,7 @@ export default class extends Component {
             action,
             progress: 5,
             progressInterval,
-            statusText: `${action}ing...`,
+            statusText: `${action.replace(/e$/, '')}ing...`,
             statusInterval: setInterval(() => this.checkStatus(), 2000),
         });
     };
