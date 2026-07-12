@@ -1,4 +1,5 @@
 node_modules
+server/counts.json
 scrambler/temp/*
 scrambler/outputs/*
 scrambler/inputs/*

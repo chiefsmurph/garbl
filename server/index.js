@@ -104,7 +104,11 @@ app.post('/upload', async (req, res, next) => {
 
 
 const statuses = {};
-const counts = { scrambles: 0, unscrambles: 0 };
+const countsPath = path.join(__dirname, 'counts.json');
+const counts = fs.existsSync(countsPath)
+  ? JSON.parse(fs.readFileSync(countsPath, 'utf8'))
+  : { scrambles: 0, unscrambles: 0 };
+const saveCounts = () => fs.writeFileSync(countsPath, JSON.stringify(counts));
 
 const newTask = async (file, action) => {
   const fn = action === 'scramble' ? scrambleMp3 : unscrambleMp3;
@@ -118,6 +122,7 @@ const newTask = async (file, action) => {
     statuses[key] = { result: `${action} was successful`, output: finalOut };
     if (action === 'scramble') counts.scrambles++;
     else counts.unscrambles++;
+    saveCounts();
   } catch (e) {
     statuses[key] = { error: `an error occurred trying to ${action} the audio` };
     console.error(e);
