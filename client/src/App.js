@@ -30,6 +30,9 @@ export default () => (
   <div className="App">
     <div className="App-container">
       <h1>garbl</h1>
+      <p style={{ marginTop: '-0.5em', marginBottom: '1.5em', fontSize: '60%', color: 'rgba(255,255,255,0.6)', fontStyle: 'italic' }}>
+        scramble audio into an unrecognizable mess. unscramble it back.
+      </p>
       <HashRouter>
         <Route exact path="/">
           <Redirect to="/home" />

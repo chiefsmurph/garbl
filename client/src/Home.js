@@ -182,6 +182,9 @@ class Home extends Component {
                     <FileUpload onChange={this.fileSelected} />
                 </div>
             </p>
+            <p style={{ fontSize: '50%', color: 'rgba(255,255,255,0.4)', marginTop: '1em' }}>
+                mp3 or wav · max 60 seconds
+            </p>
             {/* <h3>or...</h3>
             <a href="">view the descramble logs</a> */}
             {/* <h3>or...</h3>
