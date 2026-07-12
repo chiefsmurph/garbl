@@ -57,11 +57,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-const rhSocket = socketIOClient(rhEndpoint, options);
-rhSocket.on('connect', () => {
-  console.log('connection')
-})
-rhSocket.emit('client:act', 'log', `garbl: hello`);
+const rhSocket = socketIOClient(rhEndpoint, { ...options, reconnectionAttempts: 3 });
+let rhConnected = false;
+rhSocket.on('connect', () => { rhConnected = true; console.log('rh socket connected'); });
+rhSocket.on('connect_error', (e) => { rhConnected = false; console.log('rh socket unavailable:', e.message); });
+const rhLog = (...args) => { if (rhConnected) rhSocket.emit('client:act', 'log', ...args); };
+rhLog(`garbl: hello`);
 
 const userInfo = req => {
   const ip = (req.headers['x-forwarded-for'] || req.connection.remoteAddress).split(',')[0]
@@ -95,7 +96,7 @@ app.post('/upload', async (req, res, next) => {
 
   const name = uniqueName;
   console.log({ name, forceName });
-  rhSocket.emit('client:act', 'log', `garbl: upload ${name}`, userInfo(req));
+  rhLog(`garbl: upload ${name}`, userInfo(req));
 
   console.log({ audioFile });
 
@@ -151,7 +152,7 @@ const newTask = async (file, action) => {
 app.post('/act', async (req, res, next) => {
   console.log("act body", req, req.body);
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
-  rhSocket.emit('client:act', 'log', `garbl: new task: ${action} ${file}`, userInfo(req));
+  rhLog(`garbl: new task: ${action} ${file}`, userInfo(req));
   newTask(file, action);
   res.sendStatus(200);
 });
