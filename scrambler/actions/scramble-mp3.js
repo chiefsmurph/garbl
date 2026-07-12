@@ -7,6 +7,7 @@ const { getDuration, cutAtTime, cutAtTimeWav, getBaseFileName } = require('../ut
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
 const { stringObj, parseObj } = require('../utils/string-parsing');
+const { saveMetadata } = require('../utils/fingerprint');
 
 const MERGE_BATCH_SIZE = 200;
 
@@ -184,12 +185,13 @@ const singleScramble = async ({
 
  
     await write(
-        output, 
+        output,
         {
             artist: 'garbl',
-            comment: stringObj(newComment) 
+            comment: stringObj(newComment)
         }
     );
+    saveMetadata(output, newComment);
 
     if (tempSourceWav) {
         try { fs.unlinkSync(tempSourceWav); } catch (_) {}

@@ -7,6 +7,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const { read } = require('../utils/metadata');
 const { getDuration, cutAtTime, cutAtTimeWav, getBaseFileName } = require('../utils/audio');
 const { parseObj } = require('../utils/string-parsing');
+const { lookupMetadata } = require('../utils/fingerprint');
 
 const normalizeAudio = async file => {
     const { stderr } = await exec(`ffmpeg -i "${file}" -af "volumedetect" -vn -sn -dn -f null /dev/null`);
@@ -114,24 +115,30 @@ const unscrambleMp3 = async ({
 
     let conversions;
     let isYoutube = false;
-    try {
-        const metadata = await read(input);
-        console.log({ metadata })
-        const parsedComment = parseObj(metadata.comment);
-        const validScrambleMp3 = parsedComment && Array.isArray(parsedComment);
-        console.log({ parsedComment, validScrambleMp3 })
-        if (!validScrambleMp3) throw new Error();
-        conversions = parsedComment;
-    } catch (e) {
-        console.error(`no metadata found for ${input}: ${e.toString()}`);
-        console.error('reverting to default settings');
-        isYoutube = true;
-        conversions = [
-            {
-                clipDuration: 0.1, 
-                overlapRatio: 2
-            }
-        ];
+
+    // 1. server-side fingerprint store (survives metadata stripping via iMessage etc.)
+    const storeMetadata = lookupMetadata(input);
+    if (storeMetadata && Array.isArray(storeMetadata)) {
+        console.log('found metadata in server store');
+        conversions = storeMetadata;
+    } else {
+        // 2. embedded tags in the file
+        try {
+            const metadata = await read(input);
+            console.log({ metadata });
+            const parsedComment = parseObj(metadata.comment);
+            const validScrambleMp3 = parsedComment && Array.isArray(parsedComment);
+            console.log({ parsedComment, validScrambleMp3 });
+            if (!validScrambleMp3) throw new Error();
+            conversions = parsedComment;
+            console.log('found metadata in embedded tags');
+        } catch (e) {
+            // 3. fall back to defaults
+            console.error(`no metadata found for ${input}: ${e.toString()}`);
+            console.error('reverting to default settings');
+            isYoutube = true;
+            conversions = [{ clipDuration: 0.1, overlapRatio: 2 }];
+        }
     }
 
     let curInput = input;
