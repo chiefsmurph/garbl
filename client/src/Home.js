@@ -109,7 +109,7 @@ class Home extends Component {
         const isError = xhr.responseText.includes('Error');
         return isError
             ? this.somethingDidntGoRight()
-            : setTimeout(() => this.props.history.push(successRoute()), 2000 * Math.random());
+            : (this.setState({ uploadProgress: 100 }), this.props.history.push(successRoute()));
     };
 
     fileSelected = (evt, forceName) => {
@@ -126,7 +126,7 @@ class Home extends Component {
         this.setState({ uploadProgress: 0 });
         xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
-                this.setState({ uploadProgress: Math.round(e.loaded / e.total * 100) });
+                this.setState({ uploadProgress: Math.min(95, Math.round(e.loaded / e.total * 100)) });
             }
         };
         const forceAction = forceName 
