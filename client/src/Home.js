@@ -129,12 +129,7 @@ class Home extends Component {
                 this.setState({ uploadProgress: Math.min(95, Math.round(e.loaded / e.total * 100)) });
             }
         };
-        const forceAction = forceName 
-            ? '&unscramble'
-            : name.includes('scrambled')
-                ? '&scramble'
-                : '';
-        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}${forceAction}`);
+        xhr.onload = this.onLoadHandler(xhr, () => `/select?file=${name}`);
         xhr.onerror = function () {
             console.log("** An error occurred during the transaction");
         };
