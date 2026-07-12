@@ -79,22 +79,7 @@ app.post('/upload', async (req, res, next) => {
 
   const { audioFile } = req.files;
   const { forceName } = req.body;
-  const rawName = forceName || audioFile.name;
-
-  const uniqueName = (() => {
-    const inputsDir = path.join(__dirname, '../scrambler/inputs');
-    const ext = path.extname(rawName);
-    const base = path.basename(rawName, ext);
-    let candidate = rawName;
-    let i = 1;
-    while (fs.existsSync(path.join(inputsDir, candidate))) {
-      candidate = `${base}_${i}${ext}`;
-      i++;
-    }
-    return candidate;
-  })();
-
-  const name = uniqueName;
+  const name = forceName || audioFile.name;
   console.log({ name, forceName });
   rhLog(`garbl: upload ${name}`, userInfo(req));
 
