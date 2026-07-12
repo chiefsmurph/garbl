@@ -104,6 +104,7 @@ app.post('/upload', async (req, res, next) => {
 
 
 const statuses = {};
+const counts = { scrambles: 0, unscrambles: 0 };
 
 const newTask = async (file, action) => {
   const fn = action === 'scramble' ? scrambleMp3 : unscrambleMp3;
@@ -115,6 +116,8 @@ const newTask = async (file, action) => {
     const output = await fn({ input });
     const finalOut = output.split('/').pop();
     statuses[key] = { result: `${action} was successful`, output: finalOut };
+    if (action === 'scramble') counts.scrambles++;
+    else counts.unscrambles++;
   } catch (e) {
     statuses[key] = { error: `an error occurred trying to ${action} the audio` };
     console.error(e);
@@ -129,6 +132,8 @@ app.post('/act', async (req, res, next) => {
   res.send(200);
 });
 
+app.get('/stats', (req, res) => res.json(counts));
+
 app.get('/status', (req, res) => {
   const { file, action } = req.query;
   const key = [file, action].join('-');
@@ -141,7 +146,6 @@ app.get('/status', (req, res) => {
 
 const clientPath = path.join(__dirname, '../client/build');
 console.log({ clientPath });
-app.use('/garbl/outputs', express.static(path.join(__dirname, '../scrambler/outputs')));
-app.use('/garbl/inputs', express.static(path.join(__dirname, '../scrambler/inputs')));
-app.use('/garbl', express.static(clientPath));
-app.get('/', (req, res) => res.redirect('/garbl'));
+app.use('/outputs', express.static(path.join(__dirname, '../scrambler/outputs')));
+app.use('/inputs', express.static(path.join(__dirname, '../scrambler/inputs')));
+app.use('/', express.static(clientPath));

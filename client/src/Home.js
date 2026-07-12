@@ -177,7 +177,7 @@ class Home extends Component {
             <Record onBlob={this.handleBlob}/>
             <h3>or...</h3>
             <p className="select-mp3">
-                <h2>select an mp3</h2>
+                <h2>select an audio file</h2>
                 <div>
                     <FileUpload onChange={this.fileSelected} />
                 </div>
