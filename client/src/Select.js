@@ -33,13 +33,17 @@ export default class extends Component {
         xhr.open('GET', url(`status?file=${encodeURIComponent(file())}&action=${action}`), true);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.onload = () => {
-            const { status, result, error, output } = JSON.parse(xhr.responseText);
-            if (error) {
-                return this.messageThenRoute('sorry, something didn\'t go right', '/');
-            } else if (result) {
-                return this.messageThenRoute(result, `/result?${encodeURIComponent(output)}`);
-            } else {
-                this.setState({ statusText: status });
+            try {
+                const { status, result, error, output } = JSON.parse(xhr.responseText);
+                if (error) {
+                    return this.messageThenRoute('sorry, something didn\'t go right', '/');
+                } else if (result) {
+                    return this.messageThenRoute(result, `/result?${encodeURIComponent(output)}`);
+                } else {
+                    this.setState({ statusText: status });
+                }
+            } catch (e) {
+                // keep polling
             }
         }
         xhr.send();

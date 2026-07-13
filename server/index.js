@@ -148,10 +148,7 @@ app.get('/stats', (req, res) => res.json({ ...counts, v: gitHash }));
 app.get('/status', (req, res) => {
   const { file, action } = req.query;
   const key = [file, action].join('-');
-  console.log({ file, action, key });
-  res.send(
-    statuses[key]
-  );
+  res.json(statuses[key] || { status: 'pending...' });
 });
 
 
