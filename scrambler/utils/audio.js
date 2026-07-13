@@ -6,7 +6,8 @@ const ffprobe = promisify(ffmpeg.ffprobe);
 // audio
 const getDuration = async file => {
     try {
-        return (await ffprobe(file)).format.duration;
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('ffprobe timeout')), 8000));
+        return (await Promise.race([ffprobe(file), timeout])).format.duration;
     } catch (e) {
         return null;
     }
@@ -16,18 +17,19 @@ const getDuration = async file => {
 const getBaseFileName = file => file.split('.').slice(0, -1).join('').split('/').pop();
 
 const cutAtTime = (file, timestamp, duration = 1) =>
-    new Promise(resolve => {
+    new Promise((resolve, reject) => {
         const outputFile = path.join(__dirname, `../temp/${getBaseFileName(file)}-${timestamp}.mp3`);
         ffmpeg(file)
             .setStartTime(timestamp)
             .duration(duration)
             .audioChannels(2)
             .on('end', (stdout, stderr) => resolve({ stdout, stderr, outputFile }))
+            .on('error', reject)
             .saveToFile(outputFile)
     });
 
 const cutAtTimeWav = (file, timestamp, duration = 1) =>
-    new Promise(resolve => {
+    new Promise((resolve, reject) => {
         const outputFile = path.join(__dirname, `../temp/${getBaseFileName(file)}-${timestamp}.wav`);
         ffmpeg(file)
             .setStartTime(timestamp)
@@ -35,6 +37,7 @@ const cutAtTimeWav = (file, timestamp, duration = 1) =>
             .audioChannels(2)
             .audioFrequency(44100)
             .on('end', (stdout, stderr) => resolve({ stdout, stderr, outputFile }))
+            .on('error', reject)
             .saveToFile(outputFile)
     });
 
