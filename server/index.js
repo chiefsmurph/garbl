@@ -83,8 +83,6 @@ app.post('/upload', async (req, res, next) => {
   console.log({ name, forceName });
   rhLog(`garbl: upload ${name}`, userInfo(req));
 
-  console.log({ audioFile });
-
   const movePath = `../scrambler/inputs/${name}`;
   await promisify(audioFile.mv)(movePath);
 
@@ -135,7 +133,6 @@ const newTask = async (file, action) => {
 }
 
 app.post('/act', async (req, res, next) => {
-  console.log("act body", req, req.body);
   const { action, file } = JSON.parse(Object.keys(req.body)[0]);
   rhLog(`garbl: new task: ${action} ${file}`, userInfo(req));
   newTask(file, action);
