@@ -1,5 +1,5 @@
 const socketIOClient = require('socket.io-client');
-const { rhEndpoint, options } = require('./config');
+const { rhEndpoint, options, authSecret } = require('./config');
 
 const { promisify } = require('util');
 
@@ -59,7 +59,7 @@ app.use(bodyParser.json());
 
 const rhSocket = socketIOClient(rhEndpoint, { ...options, reconnectionAttempts: 3 });
 let rhConnected = false;
-rhSocket.on('connect', () => { rhConnected = true; console.log('rh socket connected'); });
+rhSocket.on('connect', () => { rhConnected = true; rhSocket.emit('attemptAuth', authSecret); console.log('rh socket connected'); });
 rhSocket.on('disconnect', () => { rhConnected = false; });
 rhSocket.io.on('reconnect_failed', () => console.log('rh socket unavailable (all retries failed)'));
 const rhLog = (...args) => { if (rhConnected) rhSocket.emit('client:act', 'log', ...args); };
